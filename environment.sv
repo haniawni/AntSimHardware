@@ -54,5 +54,5 @@ end
 env_row rows [PIXELS_Y-1:0] (.newLocClock(newLocClock),.RESET_SIM(RESET_SIM),.lookup_X(lookup_X),.write_X(write_X),
 		.write_signal(write_signal),.write_sugar(write_sugar),.write_flag_thisrow(write_flag_thisrow),
 		.lookup_data(lookup_data_each),.lookup_flag_thisrow(lookup_flag_thisrow),
-		.render_X(render_X),.render_flag_thisrow(render_flag_thisrow),.render_data(render_data));
+		.render_X(render_X),.render_flag_thisrow(render_flag_thisrow),.render_data(render_data_each));
 endmodule
