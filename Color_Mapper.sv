@@ -10,8 +10,8 @@ module  color_mapper ( input         renderSugar, renderNest, renderAnt,
 //MODOC
 
     logic [7:0] Red, Green, Blue;
-    wire renderSignal_prot;
-    assign renderSignal_prot = (renderSignal==17'bZ)?17'd0:renderSignal;
+    wire [SIGNAL_bits-1:0] renderSignal_prot;
+    assign renderSignal_prot = (renderSignal==16'bZ)?16'd0:renderSignal;
 
 
     assign VGA_R = Red;
