@@ -17,7 +17,7 @@ module collision_square (
 logic [X_bits:0] diffX;
 logic [Y_bits:0] diffY;
 always_comb begin
-	collision = 1'bZ;
+	collision = 1'b0;
 	if(check_x<obj_x) begin //left of obj_x
 		if(check_y<obj_y) begin //draw above obj_y
 			diffX = obj_x - check_x;

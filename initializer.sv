@@ -131,8 +131,8 @@ always_comb begin
 	patch_setup_y = 0;
 	patch_id_ctr_in = patch_id;
 
-	collide_x = 8'hZ;
-	collide_y = 7'hZ;
+	collide_x = 8'h0;
+	collide_y = 7'h0;
 
 	SETUP_MODE = 1;
 	HOLD_WRITELOC = 1;
@@ -159,10 +159,7 @@ always_comb begin
 			nest_setup_x = randVal[X_bits+Y_bits-1:Y_bits];
 			collide_x = nest_setup_x;
 			collide_y = nest_setup_y;
-			// if(collision==1'bZ)
-			// 	LD_nest_ctr = 1'b1;
-			// else
-				LD_nest_ctr = ((nest_setup_x<PIXELS_X) && (nest_setup_y < PIXELS_Y));
+			LD_nest_ctr = ((nest_setup_x<PIXELS_X) && (nest_setup_y < PIXELS_Y) && ~collision);
 		end
 		SETUP_ANTS: begin
 			ant_id_ctr_in = ant_id+1'd1;
@@ -176,10 +173,7 @@ always_comb begin
 			patch_setup_x = randVal[X_bits+Y_bits-1:Y_bits];
 			collide_x = patch_setup_x;
 			collide_y = patch_setup_y;
-			// if(collision==1'bZ)
-			// 	LD_patch_ctr = 1'b1;
-			// else
-				LD_patch_ctr = ((patch_setup_x<PIXELS_X) && (patch_setup_y < PIXELS_Y));
+			LD_patch_ctr = ((patch_setup_x<PIXELS_X) && (patch_setup_y < PIXELS_Y) && ~collision);
 
 		end
 		SETUP_LOCATIONS: begin

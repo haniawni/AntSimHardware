@@ -23,7 +23,6 @@ module nest (
 //MODOC
 wire drawmemaybe;
 
-assign renderNest = ((drawmemaybe==1'bZ)? 1'b0:1'b1);
 register #(.N(X_bits)) reg_x (.Ld(SETUP_PHASE && SET),.Clk(setup_clk),.Clr(RESET),.Data_In(in_x),.Data_Out(x));
 
 register #(.N(Y_bits)) reg_y (.Ld(SETUP_PHASE && SET),.Clk(setup_clk),.Clr(RESET),.Data_In(in_y),.Data_Out(y));

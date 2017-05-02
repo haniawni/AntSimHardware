@@ -10,8 +10,6 @@ module  color_mapper ( input         renderSugar, renderNest, renderAnt,
 //MODOC
 
     logic [7:0] Red, Green, Blue;
-    wire [SIGNAL_bits-1:0] renderSignal_prot;
-    assign renderSignal_prot = (renderSignal==16'bZ)?16'd0:renderSignal;
 
 
     assign VGA_R = Red;
@@ -33,20 +31,20 @@ module  color_mapper ( input         renderSugar, renderNest, renderAnt,
             Red   = 8'hFF;
             Green = 8'hFF;
             Blue  = 8'hFF;
-        end else if ((renderNest!=1'bZ)?renderNest:1'b0) begin
+        end else if (renderNest) begin
             Red   = 8'h8b;
             Green = 8'h45;
             Blue  = 8'h13;
-        end else if(renderSignal_prot>SIGNAL_DISP_MAX) begin //
+        end else if(renderSignal>SIGNAL_DISP_MAX) begin //
             Red   = 8'h66;
             Green = 8'hFF;
             Blue  = 8'hFF;
-        end else if(renderSignal_prot<SIGNAL_DISP_MIN) begin
+        end else if(renderSignal<SIGNAL_DISP_MIN) begin
             Red   = 8'h66;
             Green = 8'h99;
             Blue  = 8'h00;
         end else begin  //gradient based off chemical signal from grassy green(<2^3) to vibrant teal(>2^9)
-            diff_t = (renderSignal_prot[8:0])-SIGNAL_DISP_MIN;
+            diff_t = (renderSignal[8:0])-SIGNAL_DISP_MIN;
 
             Red   = 8'h66;
             Blue  = diff_t>>1;            

@@ -136,10 +136,12 @@ module simulation( input               CLOCK_50,
 
     wire [SUGARPATCH_num_bits-1:0] patch_id;
 
-    wire SETUP_MODE, collision, HOLD_VIEWLOC, HOLD_WRITELOC;
+    wire SETUP_MODE, HOLD_VIEWLOC, HOLD_WRITELOC;
 
     wire [NEST_num-1:0][X_bits-1:0] nests_X;
     wire [NEST_num-1:0][Y_bits-1:0] nests_Y;
+
+    wire collision;
 
     wire [2:0] ini_state;
     wire [7:0] randVal_o;
@@ -229,6 +231,20 @@ module simulation( input               CLOCK_50,
 
 
     //NESTS
+    wire [NEST_num-1:0] collision_nest;
+    wire [SUGARPATCH_num-1:0] collision_sp;
+    always_comb begin 
+        collision = 1'b0;
+        for (int koo = 0; koo < NEST_num; koo++) begin
+            collision = collision || collision_nest[koo];
+        end
+        for (int ksp = 0; ksp < SUGARPATCH_num; ksp++) begin
+            collision = collision || collision_sp[ksp];
+        end
+    end
+
+
+
     wire [NEST_num-1:0] nest_select;
     always_comb begin
         nest_select = 0;
@@ -238,7 +254,7 @@ module simulation( input               CLOCK_50,
     nest nests [NEST_num-1:0] (.setup_clk(setup_clk),.RESET(RESET_SIM),.SETUP_PHASE(SETUP_MODE),.in_x(nest_setup_x),.in_y(nest_setup_y),
         .renderNest(renderNest_byNest),.SET(nest_select),
         .render_X(render_X),.render_Y(render_Y),.x(nests_X),.y(nests_Y),
-        .collide_x(collide_x),.collide_y(collide_y),.collision(collision));
+        .collide_x(collide_x),.collide_y(collide_y),.collision(collision_nest));
     always_comb begin
         renderNest = 1'b0;
         for(int n = 0; n<NEST_num;n++) begin
@@ -255,7 +271,7 @@ module simulation( input               CLOCK_50,
     logic [SUGARPATCH_num-1:0] placeSugar_byPatch;
     sugar_patch sps [SUGARPATCH_num-1:0] (.setup_clk(setup_clk),.RESET(RESET_SIM),.SETUP_PHASE(SETUP_MODE),.in_x(patch_setup_x),.in_y(patch_setup_y),
         .placeSugar(placeSugar_byPatch),.SET(patch_select),
-        .writeLoc_x (writeLoc_x),.writeLoc_y (writeLoc_y),.collide_x(collide_x),.collide_y(collide_y),.collision(collision));
+        .writeLoc_x (writeLoc_x),.writeLoc_y (writeLoc_y),.collide_x(collide_x),.collide_y(collide_y),.collision(collision_sp));
     always_comb begin
         placeSugar = 1'b0;
         for(int pls = 0; pls<SUGARPATCH_num;pls++) begin
@@ -266,7 +282,7 @@ module simulation( input               CLOCK_50,
     //DEBUG
     assign LEDG[8] = ~SETUP_MODE;
     assign LEDG[7] = setup_clk;
-    assign LEDG[6] = (collision==1'bZ ? 1'b0 : collision);
+    assign LEDG[6] = collision;
     assign LEDG[5] = LD_ant_ctr;
     assign LEDG[4] = LD_nest_ctr;
     assign LEDG[3] = (randVal_o>0);
