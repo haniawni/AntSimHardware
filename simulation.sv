@@ -107,7 +107,7 @@ module simulation( input               CLOCK_50,
     wire [X_bits-1:0] render_X;
     wire [Y_bits-1:0] render_Y;
     assign render_X = DrawX>>2;
-    assign render_X = DrawY>>2;
+    assign render_Y = DrawY>>2;
 
     wire renderSugar, renderNest, renderAnt;
     wire [SIGNAL_bits-1:0] renderSignal;
