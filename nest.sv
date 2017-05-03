@@ -22,14 +22,13 @@ module nest (
 //Description: Static nest object, with initialization and outputs
 //Purpose: Handles collision-detection during setup and drawing during simulation
 //MODOC
-wire ld;
 
-assign ld = SETUP_PHASE && SET;
+assign LD = SETUP_PHASE && SET;
 
 
-register #(.N(X_bits)) reg_x (.Ld(ld),.Clk(setup_clk),.Clr(RESET),.Data_In(in_x),.Data_Out(x));
+register #(.N(X_bits)) reg_x (.Ld(LD),.Clk(setup_clk),.Clr(RESET),.Data_In(in_x),.Data_Out(x));
 
-register #(.N(Y_bits)) reg_y (.Ld(ld),.Clk(setup_clk),.Clr(RESET),.Data_In(in_y),.Data_Out(y));
+register #(.N(Y_bits)) reg_y (.Ld(LD),.Clk(setup_clk),.Clr(RESET),.Data_In(in_y),.Data_Out(y));
 
 collision_square drawMe(.obj_x    (x),.obj_y    (y),.radius   (NEST_RADIUS), .check_x  (render_X),.check_y  (render_Y),
 	.collision(renderNest));
