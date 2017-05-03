@@ -158,7 +158,7 @@ module simulation( input               CLOCK_50,
         .collide_x(collide_x),.collide_y(collide_y),
         .viewLoc_x(viewLoc_x),.viewLoc_y(viewLoc_y),.HOLD_VIEWLOC(HOLD_VIEWLOC),
         .writeLoc_x(writeLoc_x),.writeLoc_y(writeLoc_y), .HOLD_WRITELOC(HOLD_WRITELOC),
-        .state_o(ini_state),.randVal_o(randVal_o),.LD_ant_ctr_o(LD_ant_ctr),.LD_patch_ctr_o(LD_patch_ctr),.LD_nest_ctr_o(LD_nest_ctr);
+        .state_o(ini_state),.randVal_o(randVal_o),.LD_ant_ctr_o(LD_ant_ctr),.LD_patch_ctr_o(LD_patch_ctr),.LD_nest_ctr_o(LD_nest_ctr));
     
     //Clocks
 
