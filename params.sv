@@ -30,9 +30,10 @@
 	parameter [X_bits-1:0] SUGARPATCH_RADIUS=5;	
 
 	parameter DEBUG_MODE=0;
-	parameter DEBUG_SLOWDOWNFACTOR=100000000;
-	parameter RENDER_LOCS=1;
-	parameter SETUP_ONLY=1;
+	parameter DEBUG_RENDER_LOCS=1;
+	parameter DEBUG_SETUP_ONLY=1;
+	parameter DEBUG_SLOWDOWNFACTOR     = 50000000 * 2;
+	parameter DEBUG_SLOWDOWNFACTOR_NLC = 50000000 / 20;
 	
 // end
 `endif

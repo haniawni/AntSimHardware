@@ -126,6 +126,7 @@ module simulation( input               CLOCK_50,
                                            .DrawY(DrawY)        // vertical coordinate
 	 );
     color_mapper cmap(.renderSugar(renderSugar),.renderNest(renderNest),.renderAnt(renderAnt),.renderSignal(renderSignal),
+        .render_viewLoc (render_viewLoc),.render_writeLoc(render_writeLoc),
         .VGA_R(VGA_R),.VGA_G(VGA_G),.VGA_B(VGA_B));
     //initialization
     wire [X_bits-1:0] nest_setup_x, patch_setup_x, collide_x, viewLoc_x;

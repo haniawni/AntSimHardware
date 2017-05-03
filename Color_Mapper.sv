@@ -23,12 +23,12 @@ module  color_mapper ( input         renderSugar, renderNest, renderAnt,
     always_comb
     begin : RGB_Display
         diff_t = 9'b0;
-        if (RENDER_LOCS&&render_viewLoc) begin
+        if (DEBUG_RENDER_LOCS&&render_viewLoc) begin
             // ViewLoc = Red
             Red   = 8'hCC;
             Blue  = 8'h00;
             Green = 8'h20;
-        end else if (RENDER_LOCS&&render_writeLoc) begin
+        end else if (DEBUG_RENDER_LOCS&&render_writeLoc) begin
             // WriteLoc = Pink
             Red   = 8'hEE;
             Blue  = 8'h00;
