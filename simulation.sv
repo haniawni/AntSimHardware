@@ -290,13 +290,14 @@ module simulation( input               CLOCK_50,
 
     HexDriver hd0 (.In0 (seed[3:0]),.Out0(HEX0));
     HexDriver hd1 (.In0 (seed[7:4]),.Out0(HEX1));
+
     HexDriver hd2 (.In0 (nest_id[3:0]),.Out0(HEX2));
     HexDriver hd3 (.In0 (ant_id[3:0]),.Out0(HEX3));
 
     HexDriver hd4 (.In0 (patch_id[3:0]),.Out0(HEX4));
-    HexDriver hd5 (.In0 (0),.Out0(HEX5));
+    HexDriver hd5 (.In0 (ant_data[3:0]),.Out0(HEX5));
 
-    HexDriver hd6 (.In0 (0),.Out0(HEX6));
+    HexDriver hd6 (.In0 (ant_data[(3+Y_bits):Y_bits]),.Out0(HEX6));
     HexDriver hd7 (.In0 ({1'b0,ini_state}),.Out0(HEX7));
 
 endmodule
