@@ -18,7 +18,7 @@ always_ff @(posedge clk or posedge RESET_SIM) begin
 		slow_clock <= 0;
 	end else begin
 		ctr <= (ctr+1) % factor; //gives warning about truncating 32bit int; is fine as long as N <= 32
-		slow_clock <= (ctr < (factor>>1);
+		slow_clock <= (ctr < (factor>>1));
 	end
 end
 
