@@ -77,7 +77,7 @@ always_comb begin
 			movedYet = 0;
 		end	
 		MOVED: begin
-			IF(global_writing_flag):
+			if(global_writing_flag)
 				nextState = NOT_MOVED;
 			movedYet = 1;
 		end

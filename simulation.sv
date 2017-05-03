@@ -285,7 +285,7 @@ module simulation( input               CLOCK_50,
     assign LEDG[7] = setup_clk;
     assign LEDG[6] = collision;
     assign LEDG[5] = LD_ant_ctr;
-    assign LEDG[4] = LD_patch_ctr;
+    assign LEDG[4] = LD_nest_ctr;
     assign LEDG[3] = ant_select[0];
     assign LEDG[2:0] = ini_state;
 
