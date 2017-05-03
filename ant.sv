@@ -15,7 +15,8 @@ module ant (
 	input onSugar,
 	input [7:0][SIGNAL_bits-1:0] surrounding_signals,
 	//Control:
-	input update_flag,
+	input moveNow,
+	input global_writing_flag,
 	//Rendering
 	input [X_bits-1:0] render_X,
 	input [Y_bits-1:0] render_Y,
@@ -56,6 +57,11 @@ assign dir = DATA[(X_bits+Y_bits+2):(X_bits+Y_bits)];
 assign X = DATA[(X_bits-1+Y_bits):Y_bits];
 assign Y = DATA[Y_bits-1:0];
 
+logic movedYet;
+always_ff @(posedge global_writing_flag) begin
+	movedYet <= 0;
+end
+
 register #(.N(ANT_bits)) the_self(.Ld(LD),.Clk(game_clk),.Clr(RESET),
 						.Data_In(reg_in),.Data_Out(DATA));
 
@@ -81,9 +87,11 @@ always_ff @(posedge game_clk or posedge RESET) begin
 	if(RESET) begin
 		LD <= 1'b0;
 		reg_in <= 0;
+		movedYet <= 0;
 	end else begin
-		LD <= SETUP_PHASE ? SET : 1'b1;
-		reg_in <= SET ? D_IN : comb_out;
+		LD <= SETUP_PHASE ? SET : (moveNow&&(~movedYet));
+		reg_in <= SET ? D_IN : (comb_out);
+		movedYet = movedYet||moveNow;
 	end
 end
 
