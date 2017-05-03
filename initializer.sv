@@ -6,6 +6,8 @@ module initializer (
 	input setup_rand_clk, // 32x faster than setup_clk
 	input RESET_SIM, 
 	input [31:0] seed,
+	input [X_bits-1:0] writeLoc_x,
+	input [Y_bits-1:0] writeLoc_y,
 	output SETUP_MODE,
 	output [ANT_num_bits-1:0] ant_id,
 	output [ANT_bits-1:0] ant_data,
@@ -19,6 +21,7 @@ module initializer (
 	input [NEST_num-1:0][Y_bits-1:0] nests_Y,
 //sugarpatches
 	output [SUGARPATCH_num_bits-1:0] patch_id,
+	output SETUP_SUGARPLACE,
 	output [X_bits-1:0] patch_setup_x,
 	output [Y_bits-1:0] patch_setup_y,
 	//collisionchecking
@@ -50,8 +53,9 @@ enum logic [2:0] {  RESET_s,            //
 					LOAD_SEED,
                     SETUP_NESTS,
                     SETUP_ANTS,
-                    SETUP_FOOD,
+                    SETUP_PATCHES,
                     SETUP_LOCATIONS,
+                    SETUP_SUGAR,
                     RUN} state, next_state;
 assign state_o = state;
 assign randVal_o = randVal;
@@ -96,14 +100,18 @@ always_comb begin
 		end
 		SETUP_ANTS: begin
 			if(ant_id >= ANT_num-1)
-				next_state = SETUP_FOOD;
+				next_state = SETUP_PATCHES;
 		end
-		SETUP_FOOD: begin
+		SETUP_PATCHES: begin
 			if(patch_id >= SUGARPATCH_num-1)
 				next_state = SETUP_LOCATIONS;
 		end
 		SETUP_LOCATIONS: begin
-			if(~HOLD_WRITELOC)
+			if((viewLoc_x >= 1) && (viewLoc_y ==1))
+				next_state = SETUP_SUGAR;
+		end
+		SETUP_SUGAR: begin
+			if((writeLoc_x==PIXELS_X-1) && (writeLoc_y==PIXELS_Y-1))
 				next_state = RUN;
 		end
 		RUN: begin
@@ -130,6 +138,7 @@ always_comb begin
 	patch_setup_x = 0;
 	patch_setup_y = 0;
 	patch_id_ctr_in = patch_id;
+	SETUP_SUGARPLACE = 0;
 
 	collide_x = 8'h0;
 	collide_y = 7'h0;
@@ -154,7 +163,7 @@ always_comb begin
 			LD_seed = 1'b1;
 		end
 		SETUP_NESTS: begin
-			nest_id_ctr_in = nest_id + LD_nest_ctr;
+			nest_id_ctr_in = nest_id + 1;
 			nest_setup_y = randVal[Y_bits-1:0];
 			nest_setup_x = randVal[X_bits+Y_bits-1:Y_bits];
 			collide_x = nest_setup_x;
@@ -164,15 +173,15 @@ always_comb begin
 						 && ~collision);
 		end
 		SETUP_ANTS: begin
-			ant_id_ctr_in = ant_id+LD_ant_ctr;
+			ant_id_ctr_in = ant_id+1;
 			ant_data = {nests_X[ant_id % NEST_num], nests_Y[ant_id % NEST_num], 
 							1'b0, randVal[2:0], 
 						nests_X[ant_id % NEST_num], nests_Y[ant_id % NEST_num]};
 			ant_rand_data = randVal[10:3];
 			LD_ant_ctr = (ant_rand_data>0);
 		end
-		SETUP_FOOD: begin
-			patch_id_ctr_in = patch_id + LD_patch_ctr;
+		SETUP_PATCHES: begin
+			patch_id_ctr_in = patch_id + 1;
 			patch_setup_y = randVal[Y_bits-1:0];
 			patch_setup_x = randVal[X_bits+Y_bits-1:Y_bits];
 			collide_x = patch_setup_x;
@@ -184,8 +193,13 @@ always_comb begin
 		end
 		SETUP_LOCATIONS: begin
 			HOLD_VIEWLOC = 0;
-			if(viewLoc_x >= 2 && viewLoc_y ==1)
+			if((viewLoc_x >= 2) && (viewLoc_y ==1))
 				HOLD_WRITELOC = 0;
+		end
+		SETUP_SUGAR: begin
+			HOLD_VIEWLOC = 0;
+			HOLD_WRITELOC = 0;
+			SETUP_SUGARPLACE=1;
 		end
 		RUN: begin
 			HOLD_VIEWLOC = 0;

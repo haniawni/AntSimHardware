@@ -3,6 +3,7 @@
 module nextSignal (
 	input [7:0][SIGNAL_bits-1:0] surrounding_signals,
 	input [SIGNAL_bits-1:0] curSignal,
+	input placeSugar,
 
 	input [ANT_num-1:0]	isUpdating,
 	input 	[ANT_num-1:0] mouthFull,

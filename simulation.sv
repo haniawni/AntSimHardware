@@ -130,13 +130,16 @@ module simulation( input               CLOCK_50,
     wire [Y_bits-1:0] nest_setup_y, patch_setup_y, collide_y, viewLoc_y;
     wire [NEST_num_bits-1:0] nest_id;
 
+    wire [X_bits-1:0] writeLoc_x;
+    wire [Y_bits-1:0] writeLoc_y;
+
     wire [ANT_num_bits-1:0] ant_id;
     wire [ANT_bits-1:0] ant_data;
     wire [7:0] ant_rand_data;
 
     wire [SUGARPATCH_num_bits-1:0] patch_id;
 
-    wire SETUP_MODE, HOLD_VIEWLOC, HOLD_WRITELOC;
+    wire SETUP_MODE, HOLD_VIEWLOC, HOLD_WRITELOC, SETUP_SUGARPLACE;
 
     wire [NEST_num-1:0][X_bits-1:0] nests_X;
     wire [NEST_num-1:0][Y_bits-1:0] nests_Y;
@@ -151,9 +154,10 @@ module simulation( input               CLOCK_50,
         .ant_id(ant_id),.ant_data(ant_data),.ant_rand_data(ant_rand_data),
         .nest_id(nest_id),.nest_setup_x(nest_setup_x),.nest_setup_y(nest_setup_y),.collision(collision),
         .nests_X(nests_X),.nests_Y(nests_Y),
-        .patch_id(patch_id),.patch_setup_x(patch_setup_x),.patch_setup_y(patch_setup_y),
+        .patch_id(patch_id),.patch_setup_x(patch_setup_x),.patch_setup_y(patch_setup_y),.SETUP_SUGARPLACE(SETUP_SUGARPLACE),
         .collide_x(collide_x),.collide_y(collide_y),
-        .viewLoc_x(viewLoc_x),.viewLoc_y(viewLoc_y),.HOLD_VIEWLOC(HOLD_VIEWLOC),.HOLD_WRITELOC(HOLD_WRITELOC),
+        .viewLoc_x(viewLoc_x),.viewLoc_y(viewLoc_y),.HOLD_VIEWLOC(HOLD_VIEWLOC),
+        .writeLoc_x(writeLoc_x),.writeLoc_y(writeLoc_y), .HOLD_WRITELOC(HOLD_WRITELOC),
         .state_o(ini_state),.randVal_o(randVal_o),.LD_ant_ctr_o(LD_ant_ctr),.LD_patch_ctr_o(LD_patch_ctr));
     
     //Clocks
@@ -164,9 +168,6 @@ module simulation( input               CLOCK_50,
     //locations
     wire hold_locs;
 
-
-    wire [X_bits-1:0] writeLoc_x;
-    wire [Y_bits-1:0] writeLoc_y;
     location writeLoc(.newLocClock(CLOCK_50),.HOLD(HOLD_WRITELOC||hold_locs),.RESET_SIM(RESET_SIM),
         .curX(writeLoc_x),.curY(writeLoc_y));
     location viewLoc(.newLocClock(CLOCK_50),.HOLD(HOLD_VIEWLOC||hold_locs),.RESET_SIM(RESET_SIM),
@@ -270,7 +271,7 @@ module simulation( input               CLOCK_50,
     end
     logic [SUGARPATCH_num-1:0] placeSugar_byPatch;
     sugar_patch sps [SUGARPATCH_num-1:0] (.setup_clk(setup_clk),.RESET(RESET_SIM),.SETUP_PHASE(SETUP_MODE),.in_x(patch_setup_x),.in_y(patch_setup_y),
-        .placeSugar(placeSugar_byPatch),.SET(patch_select),
+        .placeSugar(placeSugar_byPatch),.SET(patch_select),.SETUP_SUGARPLACE(SETUP_SUGARPLACE),
         .writeLoc_x (writeLoc_x),.writeLoc_y (writeLoc_y),.collide_x(collide_x),.collide_y(collide_y),.collision(collision_sp));
     always_comb begin
         placeSugar = 1'b0;
