@@ -285,7 +285,7 @@ module simulation( input               CLOCK_50,
     assign LEDG[8] = ~SETUP_MODE;
     assign LEDG[7] = setup_clk;
     assign LEDG[6] = collision;
-    //assign LEDG[5] = LDantdebug[0];
+    assign LEDG[5] = game_clk;
     //assign LEDG[4] = LDantdebug[1];
     assign LEDG[3] = ant_select[0];
     assign LEDG[2:0] = ini_state;
@@ -304,7 +304,7 @@ module simulation( input               CLOCK_50,
     HexDriver hd5 (.In0 (Ant_X),.Out0(HEX4));
     HexDriver hd6 (.In0 (Ant_Y),.Out0(HEX5));
 
-    HexDriver hd1 (.In0 (nests_X[0][3:0]),.Out0(HEX6));
-    HexDriver hd7 (.In0 (nests_Y[0][3:0]),.Out0(HEX7));
+    HexDriver hd1 (.In0 (viewLoc_x[3:0]),.Out0(HEX6));
+    HexDriver hd7 (.In0 (viewLoc_y[3:0]),.Out0(HEX7));
 
 endmodule

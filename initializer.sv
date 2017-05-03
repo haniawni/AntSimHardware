@@ -64,6 +64,7 @@ assign randVal_o = randVal;
 assign LD_patch_ctr_o = LD_patch_ctr;
 assign LD_ant_ctr_o = LD_ant_ctr;
 assign LD_nest_ctr_o = LD_nest_ctr;
+assign local_clock = ((state<SETUP_LOCATIONS)?setup_clk: setup_rand_clk);
 
 random_32 heart_of_chaos(.rand_clk(setup_rand_clk),.LD_seed (LD_seed),.seed(seed),.value(randVal));
 
@@ -80,11 +81,9 @@ register #(.N(SUGARPATCH_num_bits)) patch_counter(.Ld(LD_patch_ctr),.Clk(setup_c
 always_ff @ (posedge local_clock or posedge RESET_SIM) begin
     if(RESET_SIM) begin
         state <= RESET_s;
-        local_clock <= setup_clk;
     end
     else begin
         state <= next_state;
-		local_clock <= (state<SETUP_LOCATIONS)?setup_clk: setup_rand_clk;
     end
 end
 
