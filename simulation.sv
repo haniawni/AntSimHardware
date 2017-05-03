@@ -57,7 +57,7 @@ module simulation( input               CLOCK_50,
     logic hpi_r, hpi_w,hpi_cs;
     logic [15:0] keycode;
     hpi_io_intf hpi_io_inst(
-                            .Clk(setup_rand_clk),
+                            .Clk(CLOCK_50),
                             .Reset(Reset_h),
                             // signals connected to NIOS II
                             .from_sw_address(hpi_addr),
@@ -77,7 +77,7 @@ module simulation( input               CLOCK_50,
      
      //CPU
      nios_system nios_system(
-                             .setup_rand_clk_clk(setup_rand_clk),         
+                             .setup_rand_clk_clk(CLOCK_50),         
                              .setup_rand_reset_reset_n(KEY[0]),
                              // .game_rand_clk_clk(game_rand_clk),
                              // .game_rand_reset_reset_n(KEY[0]),
@@ -159,7 +159,7 @@ module simulation( input               CLOCK_50,
     //Clocks
 
     clock_cutter gamestate_clocker(.clk(CLOCK_50),.slow_clock(game_clk),.factor(game_slowdown_factor),.RESET_SIM (RESET_SIM));
-    clock_cutter setup_clocker(.clk(setup_rand_clk),.factor(DEBUG_SLOWDOWNFACTOR),.slow_clock(setup_clk),.RESET_SIM (RESET_SIM));
+    clock_cutter setup_clocker(.clk(CLOCK_50),.factor(DEBUG_SLOWDOWNFACTOR),.slow_clock(setup_clk),.RESET_SIM (RESET_SIM));
     
     //locations
     wire hold_locs;
@@ -288,16 +288,16 @@ module simulation( input               CLOCK_50,
     assign LEDG[3] = (randVal_o>0);
     assign LEDG[2:0] = ini_state;
 
-    HexDriver hd0 (.In0 (seed[3:0]),.Out0(HEX0));
-    HexDriver hd1 (.In0 (seed[7:4]),.Out0(HEX1));
+    HexDriver hd0 (.In0 (seed[7:4]),.Out0(HEX0));
+    HexDriver hd2 (.In0 (nest_id[3:0]),.Out0(HEX1));
 
-    HexDriver hd2 (.In0 (nest_id[3:0]),.Out0(HEX2));
-    HexDriver hd3 (.In0 (ant_id[3:0]),.Out0(HEX3));
+    HexDriver hd3 (.In0 (ant_id[3:0]),.Out0(HEX2));
+    HexDriver hd4 (.In0 (patch_id[3:0]),.Out0(HEX3));
 
-    HexDriver hd4 (.In0 (patch_id[3:0]),.Out0(HEX4));
-    HexDriver hd5 (.In0 (ant_data[3:0]),.Out0(HEX5));
+    HexDriver hd5 (.In0 (ant_data[3:0]),.Out0(HEX4));
+    HexDriver hd6 (.In0 (ant_data[(3+Y_bits):Y_bits]),.Out0(HEX5));
 
-    HexDriver hd6 (.In0 (ant_data[(3+Y_bits):Y_bits]),.Out0(HEX6));
-    HexDriver hd7 (.In0 ({1'b0,ini_state}),.Out0(HEX7));
+    HexDriver hd1 (.In0 (nests_X[0][3:0]),.Out0(HEX6));
+    HexDriver hd7 (.In0 (nests_Y[0][3:0]),.Out0(HEX7));
 
 endmodule

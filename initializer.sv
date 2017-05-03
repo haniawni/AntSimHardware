@@ -163,7 +163,9 @@ always_comb begin
 		end
 		SETUP_ANTS: begin
 			ant_id_ctr_in = ant_id+1'd1;
-			ant_data = {nests_X[ant_id % nest_id], nests_Y[ant_id % nest_id], 1'b0, randVal[2:0], nests_X[ant_id % nest_id], nests_Y[ant_id % nest_id]};
+			ant_data = {nests_X[ant_id % NEST_num], nests_Y[ant_id % NEST_num], 
+							1'b0, randVal[2:0], 
+						nests_X[ant_id % NEST_num], nests_Y[ant_id % NEST_num]};
 			ant_rand_data = randVal[10:3];
 			LD_ant_ctr = (ant_rand_data>0);
 		end
