@@ -47,6 +47,8 @@ wire [31:0] randVal;
 wire [NEST_num_bits-1:0] nest_id_ctr_in;
 wire [ANT_num_bits-1:0] ant_id_ctr_in;
 wire [SUGARPATCH_num_bits-1:0] patch_id_ctr_in;
+wire local_clock;
+
 
 
 enum logic [2:0] {  RESET_s,            //
@@ -75,13 +77,14 @@ register #(.N(SUGARPATCH_num_bits)) patch_counter(.Ld(LD_patch_ctr),.Clk(setup_c
 						.Data_In(patch_id_ctr_in),.Data_Out(patch_id));
 
 
-always_ff @ (posedge setup_clk or posedge RESET_SIM) begin
+always_ff @ (posedge local_clock or posedge RESET_SIM) begin
     if(RESET_SIM) begin
         state <= RESET_s;
+        local_clock <= setup_clk;
     end
     else begin
         state <= next_state;
-
+		local_clock <= (state<SETUP_LOCATIONS)?setup_clk: setup_rand_clk;
     end
 end
 

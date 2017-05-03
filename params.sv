@@ -29,7 +29,7 @@
 	parameter [X_bits-1:0] NEST_RADIUS=4;	
 	parameter [X_bits-1:0] SUGARPATCH_RADIUS=5;	
 
-	parameter DEBUG_MODE=1;
+	parameter DEBUG_MODE=0;
 	parameter DEBUG_SLOWDOWNFACTOR=100000000;
 	
 // end
