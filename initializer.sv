@@ -35,7 +35,7 @@ module initializer (
 	//DEBUG
 	output [2:0] state_o,
 	output [7:0] randVal_o,
-	output LD_ant_ctr_o, LD_patch_ctr_o
+	output LD_ant_ctr_o, LD_patch_ctr_o, LD_nest_ctr_o;
 );
 //Description: Step-by-step sets up the simulation using given seed.
 //Purpose: prepares the simulation & releases control
@@ -61,6 +61,7 @@ assign state_o = state;
 assign randVal_o = randVal;
 assign LD_patch_ctr_o = LD_patch_ctr;
 assign LD_ant_ctr_o = LD_ant_ctr;
+assign LD_nest_ctr_o = LD_nest_ctr;
 
 random_32 heart_of_chaos(.rand_clk(setup_rand_clk),.LD_seed (LD_seed),.seed(seed),.value(randVal));
 
