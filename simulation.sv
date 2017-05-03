@@ -110,7 +110,7 @@ module simulation( input               CLOCK_50,
     assign render_X = DrawX>>2;
     assign render_Y = DrawY>>2;
 
-    wire renderSugar, renderNest, renderAnt;
+    wire renderSugar, renderNest, renderAnt,render_viewLoc, render_writeLoc;
     wire [SIGNAL_bits-1:0] renderSignal;
     VGA_controller vga_controller_instance(
 										   .Clk(CLOCK_50),         // 50 MHz clock
@@ -173,6 +173,9 @@ module simulation( input               CLOCK_50,
         .curX(writeLoc_x),.curY(writeLoc_y));
     location viewLoc(.newLocClock(CLOCK_50),.HOLD(HOLD_VIEWLOC||hold_locs),.RESET_SIM(RESET_SIM),
         .curX(viewLoc_x),.curY(viewLoc_y));
+    assign render_viewLoc = ((viewLoc_x==render_X)&&(viewLoc_y==render_Y));
+    assign render_writeLoc = ((writeLoc_x==render_X)&&(writeLoc_y==render_Y));
+
 
     //game logic
     wire write_flag;

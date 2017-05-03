@@ -2,6 +2,7 @@
 
 //MODOC
 module  color_mapper ( input         renderSugar, renderNest, renderAnt,
+                       input         render_viewLoc, render_writeLoc,
                        input        [SIGNAL_bits-1:0] renderSignal,         
                        output logic [7:0] VGA_R, VGA_G, VGA_B   // VGA RGB output
                      );
@@ -22,24 +23,38 @@ module  color_mapper ( input         renderSugar, renderNest, renderAnt,
     always_comb
     begin : RGB_Display
         diff_t = 9'b0;
-        if (renderAnt)  begin
+        if (RENDER_LOCS&&render_viewLoc) begin
+            // ViewLoc = Red
+            Red   = 8'hCC;
+            Blue  = 8'h00;
+            Green = 8'h20;
+        end else if (RENDER_LOCS&&render_writeLoc) begin
+            // WriteLoc = Pink
+            Red   = 8'hEE;
+            Blue  = 8'h00;
+            Green = 8'h60;
+        end else if (renderAnt)  begin
             // black ant
             Red   = 8'h00;
             Green = 8'h00;
             Blue  = 8'h00;
         end else if(renderSugar) begin
+            // white sugar
             Red   = 8'hFF;
             Green = 8'hFF;
             Blue  = 8'hFF;
         end else if (renderNest) begin
+            // Brown nest
             Red   = 8'h8b;
             Green = 8'h45;
             Blue  = 8'h13;
-        end else if(renderSignal>SIGNAL_DISP_MAX) begin //
+        end else if(renderSignal>SIGNAL_DISP_MAX) begin
+            // Teal signal
             Red   = 8'h66;
             Green = 8'hFF;
             Blue  = 8'hFF;
         end else if(renderSignal<SIGNAL_DISP_MIN) begin
+            // Green grass
             Red   = 8'h66;
             Green = 8'h99;
             Blue  = 8'h00;
