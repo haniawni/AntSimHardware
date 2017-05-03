@@ -32,6 +32,7 @@
 	parameter DEBUG_MODE=0;
 	parameter DEBUG_SLOWDOWNFACTOR=100000000;
 	parameter RENDER_LOCS=1;
+	parameter SETUP_ONLY=1;
 	
 // end
 `endif

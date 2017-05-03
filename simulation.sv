@@ -3,7 +3,8 @@
 //MODOC
 module simulation( input               CLOCK_50,
              input        [3:0]  KEY,          //bit 0 is set up as Reset
-             output       [8:0]  LEDG, LEDR,
+             output       [8:0]  LEDG, 
+             output       [17:0] LEDR,
              output logic [6:0]  HEX0, HEX1, HEX2, HEX3,HEX4,HEX5,HEX6,HEX7,
              // VGA Interface 
              output logic [7:0]  VGA_R,        //VGA Red
@@ -257,8 +258,9 @@ module simulation( input               CLOCK_50,
         nest_select[nest_id] = 1'b1;
     end
     wire [NEST_num-1:0] renderNest_byNest;
+    wire [NEST_num-1:0] nest_ld;
     nest nests [NEST_num-1:0] (.setup_clk(setup_clk),.RESET(RESET_SIM),.SETUP_PHASE(SETUP_MODE),.in_x(nest_setup_x),.in_y(nest_setup_y),
-        .renderNest(renderNest_byNest),.SET(nest_select),
+        .renderNest(renderNest_byNest),.SET(nest_select),.LD(nest_ld),
         .render_X(render_X),.render_Y(render_Y),.x(nests_X),.y(nests_Y),
         .collide_x(collide_x),.collide_y(collide_y),.collision(collision_nest));
     always_comb begin
@@ -288,27 +290,29 @@ module simulation( input               CLOCK_50,
     //DEBUG
     assign LEDG[8] = ~SETUP_MODE;
     assign LEDG[7] = setup_clk;
-    assign LEDG[6] = collision;
-    assign LEDG[5] = game_clk;
-    //assign LEDG[4] = LDantdebug[1];
-    assign LEDG[3] = ant_select[0];
+    assign LEDG[6] = game_clk;
+    assign LEDG[5] = collision;
+    assign LEDG[4] = nest_ld[1];
+    assign LEDG[3] = nest_ld[0];
     assign LEDG[2:0] = ini_state;
 	 
-	 //assign LEDR[7:4] = regindebug[0][Y_bits+2'd3:Y_bits];
-	 //assign LEDR[3:0] = regindebug[0][3:0];
+
+    assign LEDR[17] = (randVal_o>0);
+
+	assign LEDR[7:4] = nest_setup_y[3:0];
+	assign LEDR[3:0] = nest_setup_x[3:0];
 	 
 	
 
-    HexDriver hd0 (.In0 (seed[7:4]),.Out0(HEX0));
+    HexDriver hd0 (.In0 (),.Out0(HEX0));
     HexDriver hd2 (.In0 (nest_id[3:0]),.Out0(HEX1));
-
     HexDriver hd3 (.In0 (ant_id[3:0]),.Out0(HEX2));
     HexDriver hd4 (.In0 (patch_id[3:0]),.Out0(HEX3));
 
-    HexDriver hd5 (.In0 (Ant_X),.Out0(HEX4));
-    HexDriver hd6 (.In0 (Ant_Y),.Out0(HEX5));
+    HexDriver hd5 (.In0 (nests_X[0][3:0]),.Out0(HEX4));
+    HexDriver hd6 (.In0 (nests_Y[0][3:0]),.Out0(HEX5));
 
-    HexDriver hd1 (.In0 (viewLoc_x[3:0]),.Out0(HEX6));
-    HexDriver hd7 (.In0 (viewLoc_y[3:0]),.Out0(HEX7));
+    HexDriver hd1 (.In0 (nests_X[1][3:0]),.Out0(HEX6));
+    HexDriver hd7 (.In0 (nests_Y[1][3:0]),.Out0(HEX7));
 
 endmodule
