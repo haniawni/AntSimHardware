@@ -159,7 +159,7 @@ module simulation( input               CLOCK_50,
     //Clocks
 
     clock_cutter gamestate_clocker(.clk(CLOCK_50),.slow_clock(game_clk),.factor(game_slowdown_factor),.RESET_SIM (RESET_SIM));
-    clock_cutter setup_clocker(.clk(setup_rand_clk),.factor(200000000),.slow_clock(setup_clk),.RESET_SIM (RESET_SIM));
+    clock_cutter setup_clocker(.clk(setup_rand_clk),.factor(DEBUG_SLOWDOWNFACTOR),.slow_clock(setup_clk),.RESET_SIM (RESET_SIM));
     
     //locations
     wire hold_locs;
