@@ -285,7 +285,7 @@ module simulation( input               CLOCK_50,
     assign LEDG[6] = collision;
     assign LEDG[5] = LD_ant_ctr;
     assign LEDG[4] = LD_patch_ctr;
-    assign LEDG[3] = (randVal_o>0);
+    assign LEDG[3] = ant_select[0];
     assign LEDG[2:0] = ini_state;
 
     HexDriver hd0 (.In0 (seed[7:4]),.Out0(HEX0));
@@ -294,8 +294,8 @@ module simulation( input               CLOCK_50,
     HexDriver hd3 (.In0 (ant_id[3:0]),.Out0(HEX2));
     HexDriver hd4 (.In0 (patch_id[3:0]),.Out0(HEX3));
 
-    HexDriver hd5 (.In0 (ant_data[3:0]),.Out0(HEX4));
-    HexDriver hd6 (.In0 (ant_data[(3+Y_bits):Y_bits]),.Out0(HEX5));
+    HexDriver hd5 (.In0 (ant_data[(3+Y_bits):Y_bits]),.Out0(HEX4));
+    HexDriver hd6 (.In0 (ant_data[3:0]),.Out0(HEX5));
 
     HexDriver hd1 (.In0 (nests_X[0][3:0]),.Out0(HEX6));
     HexDriver hd7 (.In0 (nests_Y[0][3:0]),.Out0(HEX7));
