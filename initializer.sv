@@ -55,7 +55,7 @@ enum logic [2:0] {  RESET_s,            //
                     RUN} state, next_state;
 assign state_o = state;
 assign randVal_o = randVal;
-assign LD_nest_ctr_o = LD_nest_ctr;
+assign LD_patch_ctr_o = LD_patch_ctr;
 assign LD_ant_ctr_o = LD_ant_ctr;
 
 random_32 heart_of_chaos(.rand_clk(setup_rand_clk),.LD_seed (LD_seed),.seed(seed),.value(randVal));
