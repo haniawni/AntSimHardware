@@ -37,7 +37,7 @@ parameter loc1_index = loc0_index-loc_size;
 logic [cacheSize-1:0] shiftReg;
 //on newLocClock, shift SIGNAL_bits+1 bits
 //on reset, X
-always_ff @(posedge newLocClock or posedge RESET_SIM) begin : proc_
+always_ff @(posedge newLocClock or posedge RESET_SIM) begin
 	if(RESET_SIM) begin
 		shiftReg <= 0;
 	end else begin

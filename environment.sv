@@ -40,15 +40,8 @@ always_comb begin
 end
 // create flags
 wire [PIXELS_Y-1:0] write_flag_thisrow;
-wire [PIXELS_Y-1:0] lookup_flag_thisrow;
-wire [PIXELS_Y-1:0] render_flag_thisrow;
 always_comb begin
-	write_flag_thisrow = 0;
-	write_flag_thisrow[write_Y] = write_flag;
-	lookup_flag_thisrow = 0;
-	lookup_flag_thisrow[lookup_Y] = 1'b1;
-	render_flag_thisrow = 0;
-	render_flag_thisrow[render_Y] = 1'b1;
+	write_flag_thisrow = write_flag<<write_Y;
 end
 
 env_row rows [PIXELS_Y-1:0] (.newLocClock(newLocClock),.RESET_SIM(RESET_SIM),.lookup_X(lookup_X),.write_X(write_X),

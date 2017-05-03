@@ -38,6 +38,8 @@ module simulation( input               CLOCK_50,
 //Description: Simulates specified numbers of ants across colonies without using SRAM.
 //Purpose: For the vine.
 //MODOC
+    
+
     //idk wtf
     logic Reset_h, RESET_SIM;
     logic [31:0] seed;
