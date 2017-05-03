@@ -45,7 +45,8 @@ module simulation( input               CLOCK_50,
     wire game_rand_clk, game_clk, setup_rand_clk, setup_clk, newLocClock;
     wire [22:0] game_slowdown_factor;
     assign game_slowdown_factor = 50000000;
-    assign setup_rand_clk = CLOCK_50;    
+    assign setup_rand_clk = CLOCK_50;  
+	 //assign newLocClock = CLOCK_50;
 
     //DEBUG
     assign {Reset_h} = ~(KEY[0]);  // The push buttons are active low
@@ -198,13 +199,13 @@ module simulation( input               CLOCK_50,
     //environment
     wire viewSugar;
     wire [SIGNAL_bits-1:0] viewSignal;
-    environment env (.newLocClock(newLocClock),.RESET_SIM(RESET_SIM),
+    environment env (.newLocClock(CLOCK_50),.RESET_SIM(RESET_SIM),
         .write_X(writeLoc_x),.write_Y(writeLoc_y),.write_flag(write_flag),
         .write_signal (writeLoc_signal_in),.write_sugar  (writeLoc_sugar_in),
         .lookup_X(viewLoc_x),.lookup_Y(viewLoc_y),.lookup_sugar(viewSugar),.lookup_signal(viewSignal),
         .render_X(render_X),.render_Y(render_Y),.render_sugar(renderSugar),.render_signal(renderSignal));
 
-    env_cache ec(.viewSignal(viewSignal),.viewSugar(viewSugar),.newLocClock(newLocClock),.RESET_SIM(RESET_SIM),
+    env_cache ec(.viewSignal(viewSignal),.viewSugar(viewSugar),.newLocClock(CLOCK_50),.RESET_SIM(RESET_SIM),
         .writeLoc_X(writeLoc_x),.writeLoc_Y(writeLoc_y),.RUN(~SETUP_MODE),
         .surrounding_signals(surrounding_signals),.curSugar(writeLoc_sugar),.curSignal(writeLoc_signal));
 
