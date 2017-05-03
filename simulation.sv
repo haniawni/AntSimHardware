@@ -145,7 +145,7 @@ module simulation( input               CLOCK_50,
 
     wire [2:0] ini_state;
     wire [7:0] randVal_o;
-    wire LD_nest_ctr, LD_ant_ctr;
+    wire LD_patch_ctr, LD_ant_ctr;
     initializer bootcamp(.setup_clk(setup_clk),.setup_rand_clk(setup_rand_clk),.RESET_SIM(RESET_SIM),
         .seed(seed),.SETUP_MODE(SETUP_MODE),
         .ant_id(ant_id),.ant_data(ant_data),.ant_rand_data(ant_rand_data),
@@ -154,7 +154,7 @@ module simulation( input               CLOCK_50,
         .patch_id(patch_id),.patch_setup_x(patch_setup_x),.patch_setup_y(patch_setup_y),
         .collide_x(collide_x),.collide_y(collide_y),
         .viewLoc_x(viewLoc_x),.viewLoc_y(viewLoc_y),.HOLD_VIEWLOC(HOLD_VIEWLOC),.HOLD_WRITELOC(HOLD_WRITELOC),
-        .state_o(ini_state),.randVal_o(randVal_o),.LD_ant_ctr_o(LD_ant_ctr),.LD_nest_ctr_o(LD_nest_ctr));
+        .state_o(ini_state),.randVal_o(randVal_o),.LD_ant_ctr_o(LD_ant_ctr),.LD_patch_ctr_o(LD_patch_ctr));
     
     //Clocks
 
@@ -284,7 +284,7 @@ module simulation( input               CLOCK_50,
     assign LEDG[7] = setup_clk;
     assign LEDG[6] = collision;
     assign LEDG[5] = LD_ant_ctr;
-    assign LEDG[4] = LD_nest_ctr;
+    assign LEDG[4] = LD_patch_ctr;
     assign LEDG[3] = (randVal_o>0);
     assign LEDG[2:0] = ini_state;
 

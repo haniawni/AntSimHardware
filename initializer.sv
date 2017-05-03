@@ -32,7 +32,7 @@ module initializer (
 	//DEBUG
 	output [2:0] state_o,
 	output [7:0] randVal_o,
-	output LD_ant_ctr_o, LD_nest_ctr_o
+	output LD_ant_ctr_o, LD_patch_ctr_o
 );
 //Description: Step-by-step sets up the simulation using given seed.
 //Purpose: prepares the simulation & releases control
