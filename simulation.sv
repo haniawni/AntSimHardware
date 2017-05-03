@@ -222,7 +222,7 @@ module simulation( input               CLOCK_50,
         .render_X(render_X),.render_Y(render_Y),.renderAnt(renderAnt_byAnt),
         .ColonyX(),.ColonyY(),.X(Ant_X),.Y(Ant_Y),.dir(),
         .mouthFull(Ant_holding_sugar),.collecting_sugar(Ant_acquiring_sugar),.dropping_sugar(Ant_dropping_sugar),
-        .update_flag(update_flag_ants));
+        .moveNow(update_flag_ants),.global_writing_flag(write_flag));
     always_comb begin
         renderAnt = 1'b0;
         for (int abb = 0; abb < ANT_num; abb++) begin
