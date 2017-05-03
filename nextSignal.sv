@@ -1,5 +1,5 @@
 `include "params.sv"
-
+//MODOC
 module nextSignal (
 	input [7:0][SIGNAL_bits-1:0] surrounding_signals,
 	input [SIGNAL_bits-1:0] curSignal,
@@ -9,6 +9,10 @@ module nextSignal (
 
 	output [SIGNAL_bits-1:0] newSignal
 	);
+//Description: Calculates signal content for current writeLoc's next game state.
+//Purpose: entirely combinatorial, used for clarity.
+//MODOC
+
 wire [SIGNAL_bits-1:0] nants_spewing;
 wire [SIGNAL_bits-1:0] cumulative_spew;
 wire [SIGNAL_bits-1:0] ant_free_newsignal;

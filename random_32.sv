@@ -9,6 +9,7 @@ module random_32 (
 //Description: Pseudorandom number generator using linear feedback shift register of 32bits. Must seed w/ nonzero; ~4.2billion cycle.
 //Purpose: Provides random basis of initial setup of simulation. Initially seeded from the NIOS-II
 //MODOC
+
 wire feedback = (value[31] ^ value[21] ^ value[1] ^ value[0]) + 1'd1;
 
 always @(posedge rand_clk) begin

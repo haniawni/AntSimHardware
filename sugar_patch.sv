@@ -1,5 +1,6 @@
 `include "params.sv"
 
+//MODOC
 module sugar_patch (
 	input setup_clk,    // Clock
 	input RESET,  
@@ -16,6 +17,10 @@ module sugar_patch (
 	// draw near nest
 	output placeSugar, collision
 );
+//Descriptions: Represents a sugar patch location
+//Purpose: Protects against collisions during placement, spawns sugar
+//MODOC
+
 wire [X_bits-1:0] x;
 wire [Y_bits-1:0] y;
 wire rightspot_forsug;

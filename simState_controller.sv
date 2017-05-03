@@ -1,3 +1,6 @@
+`include "params.sv"
+
+//MODOC
 module simState_controller (
 	input newLocClock,
 	input game_clock,
@@ -8,6 +11,9 @@ module simState_controller (
 	output write_flag,
 	output hold_locs
 );
+//Description: ; only allows location/envCache cycling one-full-walk-through the screen per game_clock
+//Purpose: Controls game state flow
+//MODOC
 
 enum logic [2:0] {  INIT,
 					WRITE,

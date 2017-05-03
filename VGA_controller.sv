@@ -21,7 +21,7 @@
 //      For use with ECE 385 Lab 7 and Final Project                     --
 //      ECE Department @ UIUC                                            --
 //-------------------------------------------------------------------------
-
+//MODOC
 module  VGA_controller (input              Clk,         // 50 MHz clock
                                            Reset,       // reset signal
                         output logic       VGA_HS,      // Horizontal sync pulse.  Active low
@@ -33,7 +33,11 @@ module  VGA_controller (input              Clk,         // 50 MHz clock
                         output logic [9:0] DrawX,       // horizontal coordinate
                                            DrawY        // vertical coordinate
                         );     
-    
+//Description: Constantly scans screen and outputs the resultant colors for display on VGA
+//Purpose: necessary to see anything
+//MODOC
+
+
     // 800 pixels per line (including front/back porch
     // 525 lines per frame (including front/back porch)
     parameter [9:0] H_TOTAL = 10'd800;

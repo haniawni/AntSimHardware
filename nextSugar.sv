@@ -1,5 +1,6 @@
 `include "params.sv"
 
+//MODOC
 module nextSugar (
 	input [ANT_num-1:0]	isUpdating,
 	input [ANT_num-1:0] Ant_acquiring_sugar,
@@ -7,6 +8,10 @@ module nextSugar (
 	input placeSugar,
 	output newSugar
 );
+//Description: Calculates writeLoc's impending sugar state.
+//Purpose: combinatorial, used for code modularization.
+//MODOC
+
 wire consume;
 
 always_comb begin

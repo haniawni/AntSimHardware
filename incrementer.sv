@@ -1,3 +1,4 @@
+`include "params.sv"
 //MODOC
 module incrementer (
 	input [X_bits-1:0] x, // x loc
