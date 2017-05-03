@@ -2,7 +2,7 @@
 
 //MODOC
 module ant (
-	input game_clk,    // Clock
+	input newLocClock,    // Clock
 	input rand_clk,
 	input setup_clk,
 	input RESET,  
@@ -58,7 +58,7 @@ assign dir = DATA[(X_bits+Y_bits+2):(X_bits+Y_bits)];
 assign X = DATA[(X_bits-1+Y_bits):Y_bits];
 assign Y = DATA[Y_bits-1:0];
 
-assign localClock = (SETUP_PHASE? setup_clk : game_clk);
+assign localClock = (SETUP_PHASE? setup_clk : newLocClock);
 
 enum logic [1:0] {  NOT_MOVED, MOVED, WAIT_FOR_WRITE} state, nextState;
 wire movedYet;
@@ -109,7 +109,7 @@ ant_body bode(.x(X),.y(Y),.dir(dir),
 	.viewLoc_x(render_X),.viewLoc_y(render_Y),
 	.renderAnt(renderAnt));
 
-always_ff @(posedge game_clk or posedge RESET) begin 
+always_ff @(posedge newLocClock or posedge RESET) begin 
 	if(RESET) begin
 		state <= WAIT_FOR_WRITE;
 	end else begin

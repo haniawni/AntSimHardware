@@ -43,11 +43,10 @@ module simulation( input               CLOCK_50,
     logic [31:0] seed;
 
     //Clocks
-    wire game_rand_clk, game_clk, setup_rand_clk, setup_clk, newLocClock;
+    wire game_clk, setup_clk, setup_nlc_clk, newLocClock;
     wire [22:0] game_slowdown_factor;
     assign game_slowdown_factor = 50000000;
-    assign setup_rand_clk = CLOCK_50;  
-	 //assign newLocClock = CLOCK_50;
+	assign newLocClock = (SETUP_MODE ? setup_nlc_clk :(DEBUG_SETUP_ONLY? 1'b0: CLOCK_50));
 
     //DEBUG
     assign {Reset_h} = ~(KEY[0]);  // The push buttons are active low
@@ -152,7 +151,7 @@ module simulation( input               CLOCK_50,
     wire [2:0] ini_state;
     wire [7:0] randVal_o;
     wire LD_patch_ctr, LD_ant_ctr, LD_nest_ctr;
-    initializer bootcamp(.setup_clk(setup_clk),.setup_rand_clk(setup_rand_clk),.RESET_SIM(RESET_SIM),
+    initializer bootcamp(.setup_clk(setup_clk),.setup_rand_clk(CLOCK_50),.RESET_SIM(RESET_SIM),
         .seed(seed),.SETUP_MODE(SETUP_MODE),
         .ant_id(ant_id),.ant_data(ant_data),.ant_rand_data(ant_rand_data),
         .nest_id(nest_id),.nest_setup_x(nest_setup_x),.nest_setup_y(nest_setup_y),.collision(collision),
@@ -167,13 +166,14 @@ module simulation( input               CLOCK_50,
 
     clock_cutter gamestate_clocker(.clk(CLOCK_50),.slow_clock(game_clk),.factor(game_slowdown_factor),.RESET_SIM (RESET_SIM));
     clock_cutter setup_clocker(.clk(CLOCK_50),.factor(DEBUG_SLOWDOWNFACTOR),.slow_clock(setup_clk),.RESET_SIM (RESET_SIM));
+    clock_cutter setup_nlc_clocker(.clk(CLOCK_50),.factor(DEBUG_SLOWDOWNFACTOR_NLC),.slow_clock(setup_nlc_clk),.RESET_SIM (RESET_SIM));
     
     //locations
     wire hold_locs;
 
-    location writeLoc(.newLocClock(CLOCK_50),.HOLD(HOLD_WRITELOC||hold_locs),.RESET_SIM(RESET_SIM),
+    location writeLoc(.newLocClock(newLocClock),.HOLD(HOLD_WRITELOC||hold_locs),.RESET_SIM(RESET_SIM),
         .curX(writeLoc_x),.curY(writeLoc_y));
-    location viewLoc(.newLocClock(CLOCK_50),.HOLD(HOLD_VIEWLOC||hold_locs),.RESET_SIM(RESET_SIM),
+    location viewLoc(.newLocClock(newLocClock),.HOLD(HOLD_VIEWLOC||hold_locs),.RESET_SIM(RESET_SIM),
         .curX(viewLoc_x),.curY(viewLoc_y));
     assign render_viewLoc = ((viewLoc_x==render_X)&&(viewLoc_y==render_Y));
     assign render_writeLoc = ((writeLoc_x==render_X)&&(writeLoc_y==render_Y));
@@ -182,7 +182,7 @@ module simulation( input               CLOCK_50,
     //game logic
     wire write_flag;
 
-    simState_controller ssc(.newLocClock(CLOCK_50),.game_clock(game_clock),.RUN(RUN),.KEY_PAUSE  (KEY[3]),
+    simState_controller ssc(.newLocClock(newLocClock),.game_clock(game_clock),.RUN(RUN),.KEY_PAUSE  (KEY[3]),
         .writeLoc_x (writeLoc_x),.writeLoc_y (writeLoc_y),.write_flag (write_flag),.hold_locs(hold_locs));
 
     wire [ANT_num-1:0] update_flag_ants, Ant_acquiring_sugar, Ant_dropping_sugar, Ant_holding_sugar;
@@ -200,13 +200,13 @@ module simulation( input               CLOCK_50,
     //environment
     wire viewSugar;
     wire [SIGNAL_bits-1:0] viewSignal;
-    environment env (.newLocClock(CLOCK_50),.RESET_SIM(RESET_SIM),
+    environment env (.newLocClock(newLocClock),.RESET_SIM(RESET_SIM),
         .write_X(writeLoc_x),.write_Y(writeLoc_y),.write_flag(write_flag),
         .write_signal (writeLoc_signal_in),.write_sugar  (writeLoc_sugar_in),
         .lookup_X(viewLoc_x),.lookup_Y(viewLoc_y),.lookup_sugar(viewSugar),.lookup_signal(viewSignal),
         .render_X(render_X),.render_Y(render_Y),.render_sugar(renderSugar),.render_signal(renderSignal));
 
-    env_cache ec(.viewSignal(viewSignal),.viewSugar(viewSugar),.newLocClock(CLOCK_50),.RESET_SIM(RESET_SIM),
+    env_cache ec(.viewSignal(viewSignal),.viewSugar(viewSugar),.newLocClock(newLocClock),.RESET_SIM(RESET_SIM),
         .writeLoc_X(writeLoc_x),.writeLoc_Y(writeLoc_y),.RUN(~SETUP_MODE),
         .surrounding_signals(surrounding_signals),.curSugar(writeLoc_sugar),.curSignal(writeLoc_signal));
 
@@ -222,7 +222,7 @@ module simulation( input               CLOCK_50,
         ant_select = 0;
         ant_select[ant_id] = 1'b1;
     end
-    ant flikadik [ANT_num-1:0] (.game_clk(game_clock),.rand_clk(CLOCK_50),.setup_clk(setup_clk),.RESET(RESET_SIM),.SET(ant_select),.SETUP_PHASE(SETUP_MODE),
+    ant flikadik [ANT_num-1:0] (.newLocClock(newLocClock),.rand_clk(CLOCK_50),.setup_clk(setup_clk),.RESET(RESET_SIM),.SET(ant_select),.SETUP_PHASE(SETUP_MODE),
         .D_IN(ant_data),.seed(ant_rand_data),
         .onSugar(writeLoc_sugar),.surrounding_signals(surrounding_signals),
         .render_X(render_X),.render_Y(render_Y),.renderAnt(renderAnt_byAnt),
