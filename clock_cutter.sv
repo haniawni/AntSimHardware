@@ -13,12 +13,13 @@ module clock_cutter #(N = 32) (
 logic [N-1:0] ctr;
 
 always_ff @(posedge clk or posedge RESET_SIM) begin
-	if(RESET_SIM)
-		ctr = 0;
-	else
+	if(RESET_SIM) begin
+		ctr <= 0;
+		slow_clock <= 0;
+	end else begin
 		ctr <= (ctr+1) % factor; //gives warning about truncating 32bit int; is fine as long as N <= 32
+		slow_clock <= (ctr < (factor>>1);
+	end
 end
-
-assign slow_clock = (ctr < (factor>>1));
 
 endmodule
