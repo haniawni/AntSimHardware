@@ -154,15 +154,17 @@ always_comb begin
 			LD_seed = 1'b1;
 		end
 		SETUP_NESTS: begin
-			nest_id_ctr_in = nest_id + 1;
+			nest_id_ctr_in = nest_id + LD_nest_ctr;
 			nest_setup_y = randVal[Y_bits-1:0];
 			nest_setup_x = randVal[X_bits+Y_bits-1:Y_bits];
 			collide_x = nest_setup_x;
 			collide_y = nest_setup_y;
-			LD_nest_ctr = ((nest_setup_x<PIXELS_X) && (nest_setup_y < PIXELS_Y) && ~collision);
+			LD_nest_ctr = ((nest_setup_x + NEST_RADIUS<PIXELS_X) && (nest_setup_x> NEST_RADIUS)
+						 &&(nest_setup_y + NEST_RADIUS<PIXELS_Y) && (nest_setup_y>NEST_RADIUS)
+						 && ~collision);
 		end
 		SETUP_ANTS: begin
-			ant_id_ctr_in = ant_id+1;
+			ant_id_ctr_in = ant_id+LD_ant_ctr;
 			ant_data = {nests_X[ant_id % NEST_num], nests_Y[ant_id % NEST_num], 
 							1'b0, randVal[2:0], 
 						nests_X[ant_id % NEST_num], nests_Y[ant_id % NEST_num]};
@@ -170,12 +172,14 @@ always_comb begin
 			LD_ant_ctr = (ant_rand_data>0);
 		end
 		SETUP_FOOD: begin
-			patch_id_ctr_in = patch_id + 1;
+			patch_id_ctr_in = patch_id + LD_patch_ctr;
 			patch_setup_y = randVal[Y_bits-1:0];
 			patch_setup_x = randVal[X_bits+Y_bits-1:Y_bits];
 			collide_x = patch_setup_x;
 			collide_y = patch_setup_y;
-			LD_patch_ctr = ((patch_setup_x<PIXELS_X) && (patch_setup_y < PIXELS_Y) && ~collision);
+			LD_patch_ctr = ((patch_setup_x+SUGARPATCH_RADIUS<PIXELS_X) && (patch_setup_x>SUGARPATCH_RADIUS)
+						  &&(patch_setup_y+SUGARPATCH_RADIUS<PIXELS_Y) && (patch_setup_y>SUGARPATCH_RADIUS)
+						  && ~collision);
 
 		end
 		SETUP_LOCATIONS: begin
