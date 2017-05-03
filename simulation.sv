@@ -3,7 +3,7 @@
 //MODOC
 module simulation( input               CLOCK_50,
              input        [3:0]  KEY,          //bit 0 is set up as Reset
-             output       [8:0]  LEDG,
+             output       [8:0]  LEDG, LEDR,
              output logic [6:0]  HEX0, HEX1, HEX2, HEX3,HEX4,HEX5,HEX6,HEX7,
              // VGA Interface 
              output logic [7:0]  VGA_R,        //VGA Red
@@ -102,6 +102,7 @@ module simulation( input               CLOCK_50,
                              //add .speedfactor set by human ranging from 
     );
     
+	  
     //Rendering
     wire [9:0] DrawX, DrawY;
     wire [X_bits-1:0] render_X;
@@ -216,7 +217,7 @@ module simulation( input               CLOCK_50,
         ant_select = 0;
         ant_select[ant_id] = 1'b1;
     end
-    ant flikadik [ANT_num-1:0] (.game_clk(game_clock),.rand_clk(CLOCK_50),.RESET(RESET_SIM),.SET(ant_select),.SETUP_PHASE(SETUP_MODE),
+    ant flikadik [ANT_num-1:0] (.game_clk(game_clock),.rand_clk(CLOCK_50),.setup_clk(setup_clk),.RESET(RESET_SIM),.SET(ant_select),.SETUP_PHASE(SETUP_MODE),
         .D_IN(ant_data),.seed(ant_rand_data),
         .onSugar(writeLoc_sugar),.surrounding_signals(surrounding_signals),
         .render_X(render_X),.render_Y(render_Y),.renderAnt(renderAnt_byAnt),
@@ -284,10 +285,15 @@ module simulation( input               CLOCK_50,
     assign LEDG[8] = ~SETUP_MODE;
     assign LEDG[7] = setup_clk;
     assign LEDG[6] = collision;
-    assign LEDG[5] = LD_ant_ctr;
-    assign LEDG[4] = LD_nest_ctr;
+    //assign LEDG[5] = LDantdebug[0];
+    //assign LEDG[4] = LDantdebug[1];
     assign LEDG[3] = ant_select[0];
     assign LEDG[2:0] = ini_state;
+	 
+	 //assign LEDR[7:4] = regindebug[0][Y_bits+2'd3:Y_bits];
+	 //assign LEDR[3:0] = regindebug[0][3:0];
+	 
+	
 
     HexDriver hd0 (.In0 (seed[7:4]),.Out0(HEX0));
     HexDriver hd2 (.In0 (nest_id[3:0]),.Out0(HEX1));
@@ -295,8 +301,8 @@ module simulation( input               CLOCK_50,
     HexDriver hd3 (.In0 (ant_id[3:0]),.Out0(HEX2));
     HexDriver hd4 (.In0 (patch_id[3:0]),.Out0(HEX3));
 
-    HexDriver hd5 (.In0 (ant_data[(3+Y_bits):Y_bits]),.Out0(HEX4));
-    HexDriver hd6 (.In0 (ant_data[3:0]),.Out0(HEX5));
+    HexDriver hd5 (.In0 (Ant_X),.Out0(HEX4));
+    HexDriver hd6 (.In0 (Ant_Y),.Out0(HEX5));
 
     HexDriver hd1 (.In0 (nests_X[0][3:0]),.Out0(HEX6));
     HexDriver hd7 (.In0 (nests_Y[0][3:0]),.Out0(HEX7));

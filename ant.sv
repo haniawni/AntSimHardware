@@ -4,6 +4,7 @@
 module ant (
 	input game_clk,    // Clock
 	input rand_clk,
+	input setup_clk,
 	input RESET,  
 	//INITIALIZATION
 	input SET,
@@ -37,7 +38,7 @@ module ant (
 //MODOC
 
 wire[ANT_bits-1:0] DATA, reg_in, comb_out;
-wire LD, co_mouthFull; 
+wire LD, co_mouthFull, localClock; 
 wire [7:0] randVal;
 wire [15:0] nest_smell_left, nest_smell_right, nest_smell_front;
 wire [X_bits-1:0] left_X, front_X, right_X, co_X;
@@ -57,7 +58,7 @@ assign dir = DATA[(X_bits+Y_bits+2):(X_bits+Y_bits)];
 assign X = DATA[(X_bits-1+Y_bits):Y_bits];
 assign Y = DATA[Y_bits-1:0];
 
-
+assign localClock = (SETUP_PHASE? setup_clk : game_clk);
 
 enum logic [1:0] {  NOT_MOVED, MOVED, WAIT_FOR_WRITE} state, nextState;
 wire movedYet;
@@ -85,7 +86,9 @@ always_comb begin
 end
 
 
-register #(.N(ANT_bits)) the_self(.Ld(LD),.Clk(game_clk),.Clr(RESET),
+
+
+register #(.N(ANT_bits)) the_self(.Ld(LD),.Clk(localClock),.Clr(RESET),
 						.Data_In(reg_in),.Data_Out(DATA));
 
 random_8 magical_heart_of_whimsy(.rand_clk(rand_clk),.LD_seed (SET),.seed(seed),.value(randVal));
