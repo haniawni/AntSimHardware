@@ -57,10 +57,33 @@ assign dir = DATA[(X_bits+Y_bits+2):(X_bits+Y_bits)];
 assign X = DATA[(X_bits-1+Y_bits):Y_bits];
 assign Y = DATA[Y_bits-1:0];
 
-logic movedYet;
-always_ff @(posedge global_writing_flag) begin
-	movedYet <= 0;
+
+
+enum logic [1:0] {  NOT_MOVED, MOVED, WAIT_FOR_WRITE} state, nextState;
+wire movedYet;
+
+always_comb begin
+	nextState = state;
+	movedYet = 0;
+	unique case (state)
+		WAIT_FOR_WRITE: begin
+			if(global_writing_flag)
+				nextState = NOT_MOVED;
+			movedYet = 1;
+		end
+		NOT_MOVED: begin
+			if(moveNow)
+				nextState = MOVED;
+			movedYet = 0;
+		end	
+		MOVED: begin
+			IF(global_writing_flag):
+				nextState = NOT_MOVED;
+			movedYet = 1;
+		end
+	endcase
 end
+
 
 register #(.N(ANT_bits)) the_self(.Ld(LD),.Clk(game_clk),.Clr(RESET),
 						.Data_In(reg_in),.Data_Out(DATA));
@@ -85,15 +108,13 @@ ant_body bode(.x(X),.y(Y),.dir(dir),
 
 always_ff @(posedge game_clk or posedge RESET) begin 
 	if(RESET) begin
-		LD <= 1'b0;
-		reg_in <= 0;
-		movedYet <= 0;
+		state <= WAIT_FOR_WRITE;
 	end else begin
-		LD <= SETUP_PHASE ? SET : (moveNow&&(~movedYet));
-		reg_in <= SET ? D_IN : (comb_out);
-		movedYet = movedYet||moveNow;
+		state <= nextState;
 	end
 end
+assign reg_in = (SET ? D_IN : comb_out);
+assign LD = (SETUP_PHASE ? SET : (moveNow&&(~movedYet)));
 
 always_comb begin
 	collecting_sugar = 1'b0;
