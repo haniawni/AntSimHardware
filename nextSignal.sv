@@ -31,8 +31,10 @@ always_comb begin
 		else
 			ant_free_newsignal = ant_free_newsignal + surrounding_signals[d]>>3;
 	end
-
-	newSignal = ant_free_newsignal + cumulative_spew;
+	if(ant_free_newsignal+cumulative_spew < ant_free_newsignal) //OVERFLOW
+		newSignal = 2^SIGNAL_bits - 1
+	else
+		newSignal = ant_free_newsignal + cumulative_spew;
 end
 
 endmodule
