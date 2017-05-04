@@ -310,8 +310,8 @@ module simulation( input               CLOCK_50,
 	assign LEDR[11] = sim_botright;
 	assign LEDR[10:9] = ant_state_debug[0];
    assign LEDR[8] = write_flag;
-	assign LEDR[7:4] = nest_setup_y[3:0];
-	assign LEDR[3:0] = nest_setup_x[3:0];
+	assign LEDR[7:4] = writeLoc_x[3:0];
+	assign LEDR[3:0] = writeLoc_y[3:0];
 	 
 	
 
