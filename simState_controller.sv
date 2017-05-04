@@ -9,7 +9,9 @@ module simState_controller (
 	input [X_bits-1:0] writeLoc_x, // Clock Enable
 	input [Y_bits-1:0] writeLoc_y,  // Asynchronous reset active low
 	output write_flag,
-	output hold_locs
+	output hold_locs,
+	output [2:0]sim_state,
+	output sim_botright
 );
 //Description: ; only allows location/envCache cycling one-full-walk-through the screen per game_clock
 //Purpose: Controls game state flow
@@ -32,9 +34,11 @@ always_ff @ (posedge newLocClock) begin
     end
 end
 
+assign sim_state = state;
+assign sim_botright = botright;
 
 wire botright;
-assign botright = ((writeLoc_x == PIXELS_X) && (writeLoc_y == PIXELS_Y));
+assign botright = ((writeLoc_x == (PIXELS_X-1)) && (writeLoc_y == (PIXELS_Y-1)));
 
 
 always_comb begin

@@ -30,7 +30,7 @@ always_comb begin
 end
 
 //actual data
-register deets [PIXELS_X-1:0] (.Clk(newLocClock), .Clr(RESET_SIM),
+register #(.N(SIGNAL_bits+1'b1)) deets [PIXELS_X-1:0]  (.Clk(newLocClock_o), .Clr(RESET_SIM),
 		.Ld(ld_this_reg),.Data_In ({write_signal,write_sugar}),
 		.Data_Out(data_each));
 

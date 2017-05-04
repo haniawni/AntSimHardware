@@ -20,11 +20,11 @@ incrementer incer (.x(curX),.y(curY),.newX(newX),.newY(newY));
 
 always_ff @(posedge newLocClock or posedge RESET_SIM) begin
 	if(RESET_SIM) begin
-		curX <= 0;
-		curY <= 0;
+		curX <= PIXELS_X-1;
+		curY <= PIXELS_Y-1;
 	end else begin
-		curX <= HOLD ? curX : newX;
-		curY <= HOLD ? curY : newY;
+		curX <= (HOLD ? curX : newX);
+		curY <= (HOLD ? curY : newY);
 	end
 end
 

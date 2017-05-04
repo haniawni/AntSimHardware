@@ -33,7 +33,7 @@
 	parameter DEBUG_RENDER_LOCS=1;
 	parameter DEBUG_SETUP_ONLY=1;
 	parameter DEBUG_SLOWDOWNFACTOR     = 50000000 * 2;
-	parameter DEBUG_SLOWDOWNFACTOR_NLC = 50000000 / 20;
+	parameter DEBUG_SLOWDOWNFACTOR_NLC = 50000000 / 2000;
 	
 // end
 `endif

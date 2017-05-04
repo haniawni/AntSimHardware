@@ -31,7 +31,8 @@ module ant (
 
 	output 		 mouthFull,
 	output 		 collecting_sugar,
-	output		 dropping_sugar
+	output		 dropping_sugar,
+	output       [1:0] state_debug
 );
 //Description: Implementation of an ant model using chemotaxis for both foraging and return in accordance with Resnick, M. (1994) “Turtles, Termites and Traffic Jams: Explorations in Massively Parallel Microworlds.” Cambridge, MA: MIT Press
 //Purpose: Is used repeatedly in simulation.
@@ -62,6 +63,9 @@ assign localClock = (SETUP_PHASE? setup_clk : newLocClock);
 
 enum logic [1:0] {  NOT_MOVED, MOVED, WAIT_FOR_WRITE} state, nextState;
 wire movedYet;
+
+//debug
+assign state_debug = state;
 
 always_comb begin
 	nextState = state;

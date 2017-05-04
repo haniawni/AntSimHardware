@@ -105,7 +105,11 @@ module simulation( input               CLOCK_50,
                              //add .speedfactor set by human ranging from 
     );
     
-	  
+	 //debUG
+	 wire [ANT_num-1:0][1:0] ant_state_debug;
+	 wire [2:0] sim_state;
+	 wire sim_botright;
+	 
     //Rendering
     wire [9:0] DrawX, DrawY;
     wire [X_bits-1:0] render_X;
@@ -186,7 +190,8 @@ module simulation( input               CLOCK_50,
     wire write_flag;
 
     simState_controller ssc(.newLocClock(newLocClock),.game_clock(game_clock),.RUN(RUN),.KEY_PAUSE  (KEY[3]),
-        .writeLoc_x (writeLoc_x),.writeLoc_y (writeLoc_y),.write_flag (write_flag),.hold_locs(hold_locs));
+        .writeLoc_x (writeLoc_x),.writeLoc_y (writeLoc_y),.write_flag (write_flag),.hold_locs(hold_locs), .sim_state(sim_state),
+         .sim_botright(sim_botright));
 
     wire [ANT_num-1:0] update_flag_ants, Ant_acquiring_sugar, Ant_dropping_sugar, Ant_holding_sugar;
     wire writeLoc_sugar, writeLoc_sugar_in, placeSugar;
@@ -230,7 +235,7 @@ module simulation( input               CLOCK_50,
         .onSugar(writeLoc_sugar),.surrounding_signals(surrounding_signals),
         .render_X(render_X),.render_Y(render_Y),.renderAnt(renderAnt_byAnt),
         .ColonyX(),.ColonyY(),.X(Ant_X),.Y(Ant_Y),.dir(),
-        .mouthFull(Ant_holding_sugar),.collecting_sugar(Ant_acquiring_sugar),.dropping_sugar(Ant_dropping_sugar),
+        .mouthFull(Ant_holding_sugar),.collecting_sugar(Ant_acquiring_sugar),.dropping_sugar(Ant_dropping_sugar),.state_debug(ant_state_debug),
         .moveNow(update_flag_ants),.global_writing_flag(write_flag));
     always_comb begin
         renderAnt = 1'b0;
@@ -301,21 +306,24 @@ module simulation( input               CLOCK_50,
 	 
 
     assign LEDR[17] = (randVal_o>0);
-
+	assign LEDR[14:12] = sim_state;
+	assign LEDR[11] = sim_botright;
+	assign LEDR[10:9] = ant_state_debug[0];
+   assign LEDR[8] = write_flag;
 	assign LEDR[7:4] = nest_setup_y[3:0];
 	assign LEDR[3:0] = nest_setup_x[3:0];
 	 
 	
 
     HexDriver hd0 (.In0 (),.Out0(HEX0));
-    HexDriver hd2 (.In0 (nest_id[3:0]),.Out0(HEX1));
-    HexDriver hd3 (.In0 (ant_id[3:0]),.Out0(HEX2));
-    HexDriver hd4 (.In0 (patch_id[3:0]),.Out0(HEX3));
+    HexDriver hd1 (.In0 (nest_id[3:0]),.Out0(HEX1));
+    HexDriver hd2 (.In0 (ant_id[3:0]),.Out0(HEX2));
+    HexDriver hd3 (.In0 (patch_id[3:0]),.Out0(HEX3));
 
-    HexDriver hd5 (.In0 (nests_X[0][3:0]),.Out0(HEX4));
-    HexDriver hd6 (.In0 (nests_Y[0][3:0]),.Out0(HEX5));
+    HexDriver hd4 (.In0 (nests_X[0][3:0]),.Out0(HEX4));
+    HexDriver hd5 (.In0 (nests_Y[0][3:0]),.Out0(HEX5));
 
-    HexDriver hd1 (.In0 (nests_X[1][3:0]),.Out0(HEX6));
+    HexDriver hd6 (.In0 (nests_X[1][3:0]),.Out0(HEX6));
     HexDriver hd7 (.In0 (nests_Y[1][3:0]),.Out0(HEX7));
 
 endmodule

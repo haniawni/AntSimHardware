@@ -110,7 +110,7 @@ always_comb begin
 				next_state = SETUP_LOCATIONS;
 		end
 		SETUP_LOCATIONS: begin
-			if((viewLoc_x >= 1) && (viewLoc_y ==1))
+			if((viewLoc_x >= 2) && (viewLoc_y ==1))
 				next_state = SETUP_SUGAR;
 		end
 		SETUP_SUGAR: begin
@@ -196,7 +196,7 @@ always_comb begin
 		end
 		SETUP_LOCATIONS: begin
 			HOLD_VIEWLOC = 0;
-			if((viewLoc_x >= 2) && (viewLoc_y ==1))
+			if((viewLoc_x >= 1) && (viewLoc_y ==1))
 				HOLD_WRITELOC = 0;
 		end
 		SETUP_SUGAR: begin
