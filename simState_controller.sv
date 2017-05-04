@@ -38,7 +38,7 @@ assign sim_state = state;
 assign sim_botright = botright;
 
 wire botright;
-assign botright = ((writeLoc_x == (PIXELS_X-1)) && (writeLoc_y == (PIXELS_Y-1)));
+assign botright = ((writeLoc_x >= (PIXELS_X-1)) && (writeLoc_y >= (PIXELS_Y-1)));
 
 
 always_comb begin
