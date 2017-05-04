@@ -1,0 +1,488 @@
+
+
+Module: Color_Mapper.sv
+
+Inputs:  renderSugar,  renderNest,  renderAnt,  render_viewLoc,  render_writeLoc, [SIGNAL_bits-1:0] renderSignal
+
+Outputs: [7:0] VGA_R, [7:0] VGA_G, [7:0] VGA_B
+
+Description: Reports color of specified pixel as informed by sim state.
+
+
+Purpose: Unifies rendering architecture to simplify simulation structure
+
+
+
+
+
+
+
+Module: HexDriver.sv
+
+Inputs: [3:0] In0
+
+Outputs: [6:0] Out0
+
+
+
+
+
+
+Module: VGA_controller.sv
+
+Inputs:  Clk,  Reset
+
+Outputs:  VGA_HS,  VGA_VS,  VGA_CLK,  VGA_BLANK_N,  VGA_SYNC_N, [9:0] DrawX, [9:0] DrawY
+
+Description: Constantly scans screen and outputs the resultant colors for display on VGA
+
+
+Purpose: necessary to see anything
+
+
+
+
+
+
+
+Module: ant.sv
+
+Inputs:  newLocClock,  rand_clk,  setup_clk,  RESET,  SET,  SETUP_PHASE, [ANT_bits -, [ANT_bits 1:0], [ANT_bits D_IN, [7:0] seed, [7:0] onSugar, [SIGNAL_bits-1:0] surrounding_signals, [SIGNAL_bits-1:0] moveNow, [SIGNAL_bits-1:0] global_writing_flag, [X_bits-1:0] render_X, [Y_bits-1:0] render_Y
+
+Outputs: [Y_bits-1:0] renderAnt, [X_bits-1:0] ColonyX, [Y_bits-1:0] ColonyY, [X_bits-1:0] X, [Y_bits-1:0] Y, [2:0] dir, [2:0] mouthFull, [2:0] collecting_sugar, [2:0] dropping_sugar, [1:0] state_debug
+
+Description: Implementation of an ant model using chemotaxis for both foraging and return in accordance with Resnick, M. (1994) “Turtles, Termites and Traffic Jams: Explorations in Massively Parallel Microworlds.” Cambridge, MA: MIT Press
+
+
+Purpose: Is used repeatedly in simulation.
+
+
+
+
+
+
+
+Module: ant_body.sv
+
+Inputs: [X_bits-1:0] viewLoc_x, [Y_bits-1:0] viewLoc_y, [2:0] dir, [X_bits-1:0] x, [Y_bits-1:0] y
+
+Outputs: [Y_bits-1:0] renderAnt
+
+Description: Observes body of ant via the view location.
+
+
+Purpose: Used to draw ant
+
+
+
+
+
+
+
+Module: ant_front_locs.sv
+
+Inputs: [X_bits-1:0] X, [Y_bits-1:0] Y, [2:0] dir
+
+Outputs: [X_bits-1:0] left_X, [Y_bits-1:0] left_Y, [X_bits-1:0] front_X, [Y_bits-1:0] front_Y, [X_bits-1:0] right_X, [Y_bits-1:0] right_Y
+
+Description: Determines coordinate locations relative to body based on direction.
+
+
+Purpose: Entirely combinatorial, used for code clarity.
+
+
+
+
+
+
+
+Module: ant_nest_sniffer.sv
+
+Inputs: [X_bits-1:0] sniffX, [Y_bits-1:0] sniffY, [X_bits-1:0] ColonyX, [Y_bits-1:0] ColonyY
+
+Outputs: [15:0] nest_stench
+
+Description: Calculates strength of nest stench of ant home nest based on distance.
+
+
+Purpose: Encapsulates annoying calculations for clarity.
+
+
+
+
+wire [15:0] distance;
+
+
+TODO: fix numerical errors due to unsigned subtraction overflow
+always_comb begin
+	if(ColonyX > sniffX) begin
+		if(ColonyY > sniffY) begin
+			distance = (ColonyX - sniffX) - (ColonyY - sniffY);
+			if(distance > 16'd128)
+				nest_stench = 16'd0;
+			else
+				nest_stench = 16'd128 - distance;
+		end 
+		else begin
+			distance = (ColonyX - sniffX) - (sniffY - ColonyY);
+			if(distance > 16'd128)
+				nest_stench = 16'd0;
+			else
+				nest_stench = 16'd128 - distance;
+		end
+	end
+	else begin
+		if(ColonyY > sniffY) begin
+			distance = (sniffX - ColonyX) - (ColonyY - sniffY);
+			if(distance > 16'd128)
+				nest_stench = 16'd0;
+			else
+				nest_stench = 16'd128 - distance;
+		end
+		else begin
+			distance = (sniffX - ColonyX) - (sniffY - ColonyY);
+			if(distance > 16'd128)
+				nest_stench = 16'd0;
+			else
+				nest_stench = 16'd128 - distance;
+		end
+	end
+end
+
+endmodule
+
+
+
+
+Module: clock_cutter.sv
+
+Parameterization: N = 32
+
+Inputs:  clk, [N-1:0] factor, [N-1:0] RESET_SIM
+
+Outputs: [N-1:0] slow_clock
+
+Description: Cuts frequency of input clk by a factor of factor
+
+
+Purpose: used to establish clear ratios of randomizer_clock vs logic_clock
+
+
+
+
+
+
+
+Module: collision_square.sv
+
+Inputs: [X_bits-1:0] check_x, [Y_bits-1:0] check_y, [X_bits-1:0] obj_x, [Y_bits-1:0] obj_y, [X_bits-1:0] radius
+
+Outputs: [X_bits-1:0] collision
+
+Description: Reports if a location lands within a bounding box.
+
+
+Purpose: Used in rendering nests and placing sugar to prevent excessive overlap of objects.
+
+
+
+
+
+
+
+Module: env_cache.sv
+
+Inputs: [SIGNAL_bits-1:0] viewSignal, [SIGNAL_bits-1:0] viewSugar, [SIGNAL_bits-1:0] newLocClock, [SIGNAL_bits-1:0] RESET_SIM, [X_bits-1:0] writeLoc_X, [Y_bits-1:0] writeLoc_Y, [Y_bits-1:0] RUN
+
+Outputs: [SIGNAL_bits-1:0] surrounding_signals, [SIGNAL_bits-1:0] curSugar, [SIGNAL_bits-1:0] curSignal
+
+Description: Shift register of recently viewed environment locations
+
+
+Purpose: minimizes wiring by enabling a constant scroll through the environment following the VGA controller requests
+
+
+
+
+
+
+
+Module: env_row.sv
+
+Inputs:  newLocClock,  RESET_SIM, [X_bits-1:0] write_X, [X_bits-1:0] write_flag_thisrow, [SIGNAL_bits-1:0] write_signal, [SIGNAL_bits-1:0] write_sugar, [X_bits-1:0] lookup_X, [X_bits-1:0] render_X
+
+Outputs: [SIGNAL_bits:0] lookup_data, [SIGNAL_bits:0] render_data
+
+Description: Register file representing a row in the environment w/ independent read and write
+
+
+Purpose: Used once per row in the environment module.
+
+
+
+
+
+
+
+Module: environment.sv
+
+Inputs:  newLocClock,  RESET_SIM, [X_bits-1:0] write_X, [Y_bits-1:0] write_Y, [Y_bits-1:0] write_flag, [SIGNAL_bits-1:0] write_signal, [SIGNAL_bits-1:0] write_sugar, [X_bits-1:0] lookup_X, [Y_bits-1:0] lookup_Y, [X_bits-1:0] render_X, [Y_bits-1:0] render_Y
+
+Outputs: [Y_bits-1:0] lookup_sugar, [SIGNAL_bits-1:0] lookup_signal, [Y_bits-1:0] render_sugar, [SIGNAL_bits-1:0] render_signal
+
+Description: 2d Register file with decoupled i/o
+
+
+Purpose: represents the environment with separate input and output
+
+
+
+
+
+
+
+Module: hpi_io_intf.sv
+
+Inputs:  Clk,  Reset, [1:0] from_sw_address, [15:0] from_sw_data_out, [15:0] from_sw_r, [15:0] from_sw_w, [15:0] from_sw_cs
+
+Outputs: [15:0] from_sw_data_in, [1:0] OTG_ADDR, [1:0] OTG_RD_N, [1:0] OTG_WR_N, [1:0] OTG_CS_N, [1:0] OTG_RST_N
+
+Inouts: [15:0] OTG_DATA
+
+Description: Interface with USB
+
+
+Purpose: used as intermediary b/w cpu and USB
+
+
+
+
+
+
+
+Module: incrementer.sv
+
+Inputs: [X_bits-1:0] x, [Y_bits-1:0] y
+
+Outputs: [X_bits-1:0] newX, [Y_bits-1:0] newY
+
+Description: Given current location in environment, provide next one
+
+
+Purpose: Simplifies the constant-cycling of Locations following VGA-controller lead.
+
+
+
+
+
+
+
+Module: initializer.sv
+
+Inputs:  setup_clk,  setup_rand_clk,  RESET_SIM, [31:0] seed, [X_bits-1:0] writeLoc_x, [Y_bits-1:0] writeLoc_y, [X_bits-1:0] nests_X, [Y_bits-1:0] nests_Y
+
+Outputs: [Y_bits-1:0] SETUP_MODE, [ANT_num_bits-1:0] ant_id, [ANT_bits-1:0] ant_data, [7:0] ant_rand_data, [NEST_num_bits-1:0] nest_id, [X_bits-1:0] nest_setup_x, [Y_bits-1:0] nest_setup_y
+
+sugarpatches
+	output [SUGARPATCH_num_bits-1:0] patch_id,
+	output SETUP_SUGARPLACE,
+	output [X_bits-1:0] patch_setup_x,
+	output [Y_bits-1:0] patch_setup_y,
+	//collisionchecking
+	output [X_bits-1:0] collide_x,
+	output [Y_bits-1:0] collide_y,
+	input collision,
+	//location manipulation
+	input [X_bits-1:0] viewLoc_x,
+	input [Y_bits-1:0] viewLoc_y,
+	output HOLD_VIEWLOC, HOLD_WRITELOC,
+	//DEBUG
+	output [2:0] state_o,
+	output [7:0] randVal_o,
+	output LD_ant_ctr_o, LD_patch_ctr_o, LD_nest_ctr_o
+);
+
+
+Description: Step-by-step sets up the simulation using given seed.
+
+
+Purpose: prepares the simulation & releases control
+
+
+
+
+
+
+
+Module: location.sv
+
+Inputs:  HOLD,  RESET_SIM,  newLocClock
+
+Outputs: [X_bits-1:0] curX, [Y_bits-1:0] curY
+
+Description: 2xRegister w/ contained incrementer
+
+
+Purpose: Tracks coords of a moving index in the game world
+
+
+
+
+
+
+
+Module: nest.sv
+
+Inputs:  setup_clk,  RESET,  SET,  SETUP_PHASE, [X_bits-1:0] in_x, [Y_bits-1:0] in_y, [X_bits-1:0] render_X, [Y_bits-1:0] render_Y, [X_bits-1:0] collide_x, [Y_bits-1:0] collide_y
+
+Outputs:  LD, [Y_bits-1:0] renderNest, [Y_bits-1:0] collision, [X_bits-1:0] x, [Y_bits-1:0] y
+
+Description: Static nest object, with initialization and outputs
+
+
+Purpose: Handles collision-detection during setup and drawing during simulation
+
+
+
+
+
+
+
+Module: nextSignal.sv
+
+Inputs: [SIGNAL_bits-1:0] surrounding_signals, [SIGNAL_bits-1:0] curSignal, [ANT_num-1:0] isUpdating, [ANT_num-1:0] mouthFull
+
+Outputs: [SIGNAL_bits-1:0] newSignal
+
+Description: Calculates signal content for current writeLoc's next game state.
+
+
+Purpose: entirely combinatorial, used for clarity.
+
+
+
+
+
+
+
+Module: nextSugar.sv
+
+Inputs: [ANT_num-1:0] isUpdating, [ANT_num-1:0] Ant_acquiring_sugar, [ANT_num-1:0] curSugar, [ANT_num-1:0] placeSugar
+
+Outputs: [ANT_num-1:0] newSugar
+
+Description: Calculates writeLoc's impending sugar state.
+
+
+Purpose: combinatorial, used for code modularization.
+
+
+
+
+
+
+
+Module: random_32.sv
+
+Inputs:  rand_clk
+
+Outputs: 
+
+Description: Pseudorandom number generator using linear feedback shift register of 32bits. Must seed w/ nonzero; ~4.2billion cycle.
+
+
+Purpose: Provides random basis of initial setup of simulation. Initially seeded from the NIOS-II
+
+
+
+
+
+
+
+Module: random_8.sv
+
+Inputs:  rand_clk
+
+Outputs: 
+
+Description: Pseudorandom number generator using linear feedback shift register of 8bits. Must seed w/ nonzero; 255cycle.
+
+
+Purpose: Provides basis of ant random movement.
+
+
+
+
+
+
+
+Module: register.sv
+
+Parameterization: N = 16
+
+Inputs:  Ld,  Clk,  Clr, [N-1:0] Data_In
+
+Outputs: [N-1:0] Data_Out
+
+Description: This is a register with Ld signal of variable bit size.
+
+
+Purpose: Will be used a multitude of times in order to store data synced with clock.
+
+
+
+
+
+
+
+Module: simState_controller.sv
+
+Inputs:  newLocClock,  game_clock,  RUN,  KEY_PAUSE, [X_bits-1:0] writeLoc_x, [Y_bits-1:0] writeLoc_y
+
+Outputs: [Y_bits-1:0] write_flag, [Y_bits-1:0] hold_locs, [2:0] sim_state, [2:0] sim_botright
+
+Description: ; only allows location/envCache cycling one-full-walk-through the screen per game_clock
+
+
+Purpose: Controls game state flow
+
+
+
+
+
+
+
+Module: simulation.sv
+
+Inputs:  CLOCK_50, [3:0] KEY
+
+Outputs: [8:0] LEDG, [17:0] LEDR, [6:0] HEX0, [6:0] HEX1, [6:0] HEX2, [6:0] HEX3, [6:0] HEX4, [6:0] HEX5, [6:0] HEX6, [6:0] HEX7, [7:0] VGA_R, [7:0] VGA_G, [7:0] VGA_B,  VGA_CLK,  VGA_SYNC_N,  VGA_BLANK_N,  VGA_VS,  VGA_HS, [1:0] OTG_ADDR,  OTG_CS_N,  OTG_RD_N,  OTG_WR_N,  OTG_RST_N, [12:0] DRAM_ADDR, [1:0] DRAM_BA, [3:0] DRAM_DQM,  DRAM_RAS_N,  DRAM_CAS_N,  DRAM_CKE,  DRAM_WE_N,  DRAM_CS_N,  DRAM_CLK
+
+Inouts: [15:0] OTG_DATA, [31:0] DRAM_DQ
+
+Description: Simulates specified numbers of ants across colonies without using SRAM.
+
+
+Purpose: For the vine.
+
+
+
+
+
+
+
+Module: sugar_patch.sv
+
+Inputs:  setup_clk,  RESET,  SET,  SETUP_PHASE, [X_bits-1:0] in_x, [Y_bits-1:0] in_y, [X_bits-1:0] writeLoc_x, [Y_bits-1:0] writeLoc_y, [X_bits-1:0] collide_x, [Y_bits-1:0] collide_y, [Y_bits-1:0] SETUP_SUGARPLACE
+
+Outputs: [Y_bits-1:0] placeSugar, [Y_bits-1:0] collision
+
+Descriptions: Represents a sugar patch location
+
+
+Purpose: Protects against collisions during placement, spawns sugar
+
+
+
+
+

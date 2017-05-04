@@ -1,4 +1,4 @@
-`include "params.sv"
+`include "../params.sv"
 
 module fpga_ant (
 	input CLOCK_50,
@@ -15,7 +15,7 @@ module fpga_ant (
                          VGA_SYNC_N,   //VGA Sync signal
                          VGA_BLANK_N,  //VGA Blank signal
                          VGA_VS,       //VGA virtical sync signal
-                         VGA_HS,       //VGA horizontal sync signal
+                         VGA_HS       //VGA horizontal sync signal
 );
 //SETUP MODE = S15
 // NLC = KEY 3
@@ -36,20 +36,22 @@ module fpga_ant (
 
 
 wire [ANT_num-1:0] ant_id;
-wire write_flag, newLocClock, writeLoc_sugar
-wire [X_bits-1:0] writeLoc_x, 
-wire [Y_bits-1:0] writeLoc_y, 
-wire [Ant_bits-1:0] ant_data;
+wire write_flag, newLocClock, writeLoc_sugar, SETUP_MODE, setup_clk,RESET_SIM,Ant_holding_sugar,Ant_acquiring_sugar,Ant_dropping_sugar;
+wire [1:0] ant_state_debug;
+wire [X_bits-1:0] writeLoc_x;
+wire [Y_bits-1:0] writeLoc_y; 
+wire [ANT_bits-1:0] ant_data;
 
 assign SETUP_MODE  = S[15];
 
 assign newLocClock = KEY[3];
+assign RESET_SIM   = KEY[2];
 assign setup_clk   = KEY[1];
 
 assign ant_data   = SETUP_MODE? {PIXELS_X>>1,PIXELS_Y>>1,S[3],S[2:0],(PIXELS_X>>1) -2,PIXELS_Y>>1} : 34'd0;
 assign ant_id     = SETUP_MODE? S[2:0] : 2;
 
-assign write_flag = SETUP_MODE? 0 : S[14]
+assign write_flag = SETUP_MODE? 0 : S[14];
 
 assign writeLoc_x = 78 + (SETUP_MODE ? 0:S[5:3]);
 assign writeLoc_y = 58 + (SETUP_MODE ? 0:S[2:0]);
@@ -63,14 +65,15 @@ assign LEDR[2] = Ant_dropping_sugar;
 
 
 // hereis inside shit
-    wire [ANT_num-1:0] ant_select, renderAnt_byAnt, update_flag_ants;
-    wire [ANT_num-1:0][X_bits-1:0] Ant_X, render_X;
-    wire [ANT_num-1:0][Y_bits-1:0] Ant_Y, render_Y;
+    wire [ANT_num-1:0] ant_select, update_flag_ants;
+    wire [X_bits-1:0] Ant_X, render_X;
+    wire [Y_bits-1:0] Ant_Y, render_Y;
     wire renderAnt;
 
-HexDriver hd [4:0] (.In0 ({Ant_X[7:0],Ant_Y[7:0]}),{HEX3,HEX2,HEX1,HEX0});
+
+HexDriver hd [3:0] (.In0 ({Ant_X[7:3],Ant_X[3:0],1'b0,Ant_Y[6:3],Ant_Y[3:0]}),.Out0({HEX3,HEX2,HEX1,HEX0}));
     always_comb begin
-        update_flag_ants[0] = ((Ant_X[0] == writeLoc_x) && (Ant_Y[0] == writeLoc_y) && write_flag);
+        update_flag_ants = ((Ant_X == writeLoc_x) && (Ant_Y == writeLoc_y) && write_flag);
         ant_select = 0;
         ant_select[ant_id] = SETUP_MODE;
     end
