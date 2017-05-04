@@ -1,6 +1,6 @@
 `include "params.sv"
 // MODOC
-module register #(N = 42) (
+module register #(N = 16) (
 	input logic Ld,
 				Clk,
 				Clr,

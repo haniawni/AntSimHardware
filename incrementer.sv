@@ -13,9 +13,9 @@ module incrementer (
 	always_comb begin
 		newX = x+1;
 		newY = y;
-		if (x == (PIXELS_X)) begin
+		if (x >= (PIXELS_X)) begin
 			newX = 0;
-			if(y == (PIXELS_Y -1))
+			if(y >= (PIXELS_Y -1))
 				newY = 0;
 			else
 				newY = y + 1;

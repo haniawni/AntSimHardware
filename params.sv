@@ -20,7 +20,7 @@
 	parameter [2:0] SUGARPATCH_num_bits=4; // size of rep of number of sugars
 	parameter [SUGARPATCH_num_bits-1:0] SUGARPATCH_num=4; // number of sugarpatches
 
-	parameter [4:0] SIGNAL_bits=16; //size of representation of signal chemical density (aka. signal strength)
+	parameter [4:0] SIGNAL_bits=15; //size of representation of signal chemical density (aka. signal strength)
 	parameter [SIGNAL_bits-1:0] ANT_SIGNAL_SPEW_RATE=2^12; // increment to signal strength from a spewing ant
 
 	parameter [15:0] SIGNAL_DISP_MIN=2^3;
@@ -31,7 +31,7 @@
 
 	parameter DEBUG_MODE=0;
 	parameter DEBUG_RENDER_LOCS=1;
-	parameter DEBUG_SETUP_ONLY=1;
+	parameter DEBUG_SETUP_ONLY=0;
 	parameter DEBUG_SLOWDOWNFACTOR     = 50000000 * 2;
 	parameter DEBUG_SLOWDOWNFACTOR_NLC = 50000000 / 2000;
 	
